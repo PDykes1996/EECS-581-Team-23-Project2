@@ -4,6 +4,6 @@
 
 Paul Dykes,
 John,
-Spencer,
+Spencer Addis,
 Mann,
 Will,
