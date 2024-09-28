@@ -34,6 +34,7 @@ pygame.init()
 
 
 gameParams = {
+    "winner" : None,
     "finished": False,
     "game_running": True,
     "restart_game": False,
@@ -66,8 +67,16 @@ def main():
     """
     Main game loop that controls the flow of the game.
     """
+    clock = pygame.time.Clock()
 
     while gameParams["game_running"]:
+
+        for event in pygame.event.get():
+           if event.type == pygame.QUIT:
+            gameParams["game_running"] = False
+            pygame.quit()
+            sys.exit()
+
         if gameParams["restart_game"]:
             # Reset all game variables for a new game
             gameParams["num_ships"] = 0
@@ -79,10 +88,10 @@ def main():
             gameParams["player2"].hits = None
             gameParams["restart_game"] = False
             continue
-
+        
         # Start screen to select number of ships
         startScreen = StartScreen(gameParams, colorDict)
-        startScreen.display(gameParams["screen"], gameParams["font"])
+        startScreen.display()
 
         #Initialize other screens with new game parameters
         placementScreen = PlacementScreen(colorDict, gameParams)
@@ -90,16 +99,12 @@ def main():
         battleScreen = BattleScreen(colorDict, gameParams)
         winScreen = WinScreen(colorDict, gameParams)
 
-
-
-
         placementScreen.display()
 
 
 
-        # Main game loop
-        winner = None
-        while winner == None:
+
+        while gameParams ["winner"] == None:
             # Player 1's turn
             winner = battleScreen.display(gameParams["player1"], gameParams["player2"])
             if winner:

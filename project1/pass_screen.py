@@ -3,29 +3,36 @@ import pygame
 import sys
 
 class PassScreen:
-    def __init__(self, player, screen, font, colors):
+    def __init__(self, gameParams, colors):
         self.colors = colors # Dictionary of colors
-        self.nextPlayer = player # Player to pass control to
-        self.screen = screen # Game screen
-        self.font = font    # Font for text
+        self.gameParams = gameParams
 
     def display(self, player):
         """
         Display a screen to pass control to the next player.
 
         Args:
-        player (int): The player number to pass control to
+        player (Player): The player to pass control to
         """
         finished = False
         while not finished:
-            button = Button(self.screen, self.font)
+            passButtonParams ={
+                "x": 400,
+                "y": 600,
+                "width": 150,
+                "height": 50,
+                "action": lambda: globals().update(finished=True),
+                "text": "Finish",
+                "button_color": self.colors["LIGHT_GRAY"] ,
+            }
+            passButton = Button(self.gameParams["screen"], self.gameParams["font"], passButtonParams)
 
             self.screen.fill(self.colors["WHITE"])  # Clear screen
             # Display pass instruction
-            text = self.font.render(f"Pass to player {player}", True, self.colors["BLACK"])
+            text = self.font.render(f"Pass to player {player.player_id}", True, self.colors["BLACK"])
             self.screen.blit(text, (350, 20))
             # Draw finish button
-            button.draw("Finish", 400, 600, 150, 50, self.colors["LIGHT_GRAY"], lambda: globals().update(finished=True))
+            passButton.draw()
 
             for event in pygame.event.get():
                 if event.type == pygame.MOUSEBUTTONDOWN:
