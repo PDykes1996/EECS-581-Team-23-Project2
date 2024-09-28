@@ -31,13 +31,12 @@ from win_screen import WinScreen
 
 # Initialize Pygame and set up the display
 pygame.init()
-#screen = pygame.display.set_mode((1000, 750))  # Create a 1000x750 pixel window
-#font = pygame.font.Font(None, 36)  # Set up a default font for text rendering
 
-# Game Parameters
 
 gameParams = {
     "finished": False,
+    "game_running": True,
+    "restart_game": False,
     "num_ships": 0,
     "player1" : Player(1),
     "player2" : Player(2),
@@ -61,77 +60,60 @@ colorDict = {
 
 #Initializing Player information
 
-# Global variables to store game state
-num_ships = 0  # Number of ships each player will have
-#player1_ships = None  # Stores Player 1's ship placements
-#player2_ships = None  # Stores Player 2's ship placements
-
-# Grids to track attacks for each player (10x10 grid)
-#player1_attack_grid = [[None for _ in range(10)] for _ in range(10)]
-#player2_attack_grid = [[None for _ in range(10)] for _ in range(10)]
-
-# Variables to store hit information for each player
-#player1_hits = None  # Will be initialized as a 10x10 grid
-#player2_hits = None  # Will be initialized as a 10x10 grid
-
 # Lists to store sunk ships for each player
-
-#finished = False  # Global flag to indicate when a screen is finished
 
 def main():
     """
     Main game loop that controls the flow of the game.
     """
-    global num_ships, player1_ships, player2_ships, player1_sunk_ships, player2_sunk_ships
-    global game_running, restart_game, player1_hits, player2_hits
 
-    game_running = True
-    restart_game = False
-
-    while game_running:
-        if restart_game:
+    while gameParams["game_running"]:
+        if gameParams["restart_game"]:
             # Reset all game variables for a new game
-            num_ships = 0
-            player1_ships = None
-            player2_ships = None
-            player1_sunk_ships = []
-            player2_sunk_ships = []
-            player1_hits = None
-            player2_hits = None
-            restart_game = False
+            gameParams["num_ships"] = 0
+            gameParams["player1"].ships = None
+            gameParams["player2"].ships = None
+            gameParams["player1"].sunk_ships = []
+            gameParams["player2"].sunk_ships = []
+            gameParams["player1"].hits = None
+            gameParams["player2"].hits = None
+            gameParams["restart_game"] = False
             continue
 
         # Start screen to select number of ships
         startScreen = StartScreen(gameParams, colorDict)
         startScreen.display()
-        # Initialize hit grids for both players
-        #player1_hits = [[None] * 10 for _ in range(10)]
-        #player2_hits = [[None] * 10 for _ in range(10)]
 
-        # Ship placement for both players
-        placement_screen(1)
-        pass_screen(2)
+        #Initialize other screens with new game parameters
+        placementScreen = PlacementScreen(colorDict, gameParams)
+        passScreen = PassScreen(colorDict, gameParams)
+        battleScreen = BattleScreen(colorDict, gameParams)
+        winScreen = WinScreen(colorDict, gameParams)
 
-        placement_screen(2)
-        pass_screen(1)
+
+
+
+        placementScreen.display()
+
+
 
         # Main game loop
-        winner = 0
-        while winner == 0:
+        winner = None
+        while winner == None:
             # Player 1's turn
-            winner = battle_screen(1, player2_ships, player1_hits, player1_ships)
+            winner = battleScreen.display(gameParams["player1"], gameParams["player2"])
             if winner:
                 break
-            pass_screen(2)
+            passScreen.display(gameParams["player2"])
 
             # Player 2's turn
-            winner = battle_screen(2, player1_ships, player2_hits, player2_ships)
+            winner = battleScreen.display(gameParams["player2"], gameParams["player1"])
             if winner:
                 break
-            pass_screen(1)
+            passScreen.display(gameParams["player1"])
 
         # Display winner and handle game end or restart
-        winner_screen(winner)
+        winScreen.display(winner)
 
         if not game_running:
             break
