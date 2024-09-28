@@ -5,13 +5,13 @@ class Button:
         self.colors = colors #Color dictionary
         self.screen = gameParams["screen"]#Pull the screen info from the gameParams dictionary
         self.font = gameParams["font"]#Pull the font info from the gameParams dictionary
-        self.color = buttonColor #The specified button color is called at object creation, this makes it easier to create buttons
+        self.buttonColor = buttonColor #The specified button color is called at object creation, this makes it easier to create buttons
 
         #X and Y coordinates of the button
         self.x = x
         self.y = y
         #Width and Height of the button
-        self.width
+        self.width = width
         self.height = height
         self.rect = pygame.Rect(x, y, width, height) #Create a rectangle on the screen:
                                                     #at coordinates: X and Y

@@ -102,22 +102,26 @@ def main():
             continue
 
         # Start screen to select number of ships
-        startScreen = StartScreen(gameParams, colorDict)
-        startScreen.display()
+            #startScreen = StartScreen(gameParams, colorDict)
+            #startScreen.display()
         # Initialize hit grids for both players
         #player1_hits = [[None] * 10 for _ in range(10)]
         #player2_hits = [[None] * 10 for _ in range(10)]
 
         # Ship placement for both players
-        placement_screen(1)
-        pass_screen(2)
-
-        placement_screen(2)
-        pass_screen(1)
+        #placement_screen(1)
+        #placement_screen(2)
+        #pass_screen(1)
 
         # Main game loop
         winner = 0
+        player1 = Player(1)
+        player2 = Player(2)
+        battle_screen = BattleScreen((player1, player2), gameParams)
+        battle_screen.display(1)
         while winner == 0:
+            #battle_screen.display(1)
+            """
             # Player 1's turn
             winner = battle_screen(1, player2_ships, player1_hits, player1_ships)
             if winner:
@@ -135,6 +139,7 @@ def main():
 
         if not game_running:
             break
+        """
 
 
 if __name__ == "__main__":
