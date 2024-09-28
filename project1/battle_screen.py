@@ -1,5 +1,4 @@
 from player import Player
-
 import pygame
 
 class BattleScreen:
@@ -44,6 +43,10 @@ class BattleScreen:
         """Check if all coordinates of a ship have been hit."""
         return all(hits_grid[y][x] == 'H' for y, x in ship['coords'])
 
+
+    def all_ships_sunk(self, player_ships):
+        """Check if all ships of a player have been sunk."""
+        return all(self.check_ship_sunk(ship) for ship in player_ships)
 
     def display(self, player, opponent, hits_grid, player_ships):
         while not finished:
@@ -125,20 +128,20 @@ class BattleScreen:
 
             pygame.display.flip()  # Update the display
 
+            # Check for a winner
+        if all_ships_sunk(opponent_ships):
+            finished = True
+            winner = player
+            return winner
+        else:
+            return 0
+
     # Update sunk ships for the correct player
         if player == 1:
             player2_sunk_ships = opponent_sunk_ships
         else:
             player1_sunk_ships = opponent_sunk_ships
 
-    def all_ships_sunk(player_ships):
-        """Check if all ships of a player have been sunk."""
-        return all(check_ship_sunk(ship) for ship in player_ships)
 
-    # Check for a winner
-    if all_ships_sunk(opponent_ships):
-        finished = True
-        winner = player
-        return winner
-    else:
-        return 0
+
+    

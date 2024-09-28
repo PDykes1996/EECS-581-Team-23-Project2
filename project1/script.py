@@ -82,7 +82,7 @@ def main():
 
         # Start screen to select number of ships
         startScreen = StartScreen(gameParams, colorDict)
-        startScreen.display()
+        startScreen.display(gameParams["screen"], gameParams["font"])
 
         #Initialize other screens with new game parameters
         placementScreen = PlacementScreen(colorDict, gameParams)
@@ -115,7 +115,7 @@ def main():
         # Display winner and handle game end or restart
         winScreen.display(winner)
 
-        if not game_running:
+        if not gameParams["game_running"]:
             break
 
 
