@@ -109,6 +109,9 @@ class BattleScreen:
         self.finished = True
 
     def display(self, player):
+        # Extract game parameters
+        screen = self.gameParams["screen"]
+        font = self.gameParams["font"]
         # Determine opponent
         opponent = self.gameParams["player2"] if player.player_id == 1 else self.gameParams["player1"]
         self.finished = False
@@ -116,11 +119,11 @@ class BattleScreen:
         shot_result = None
 
         while not self.finished:
-            self.gameParams["screen"].fill(self.colors["WHITE"])  # Clear the screen
+            screen.fill(self.colors["WHITE"])  # Clear the screen
 
             # Display instruction for the current player
-            text = self.gameParams["font"].render(f"Player {player.player_id}: Select a cell to attack", True, self.colors["BLACK"])
-            self.gameParams["screen"].blit(text, (300, 20))
+            text = font.render(f"Player {player.player_id}: Select a cell to attack", True, self.colors["BLACK"])
+            screen.blit(text, (300, 20))
 
 
             opponentGridParams ={
@@ -133,7 +136,7 @@ class BattleScreen:
             "font_offset_y" : 5,
             "line_thickness" : 2,
             "circle_radius" : 10,
-        }
+            }
             playerGridParams ={
             "player" : player,
             "label" : "Your Grid",
@@ -151,8 +154,8 @@ class BattleScreen:
             self.draw_grid(playerGridParams)
 
             if shot_result:
-                result_text = self.gameParams["font"].render(shot_result, True, self.colors["BLACK"])
-                self.gameParams["screen"].blit(result_text, (400, 650))
+                result_text = font.render(shot_result, True, self.colors["BLACK"])
+                screen.blit(result_text, (400, 650))
 
             # Draw the finish turn button
             finish_turn_buttonParams = {
