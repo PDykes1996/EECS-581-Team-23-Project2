@@ -28,7 +28,6 @@ from battle_screen import BattleScreen
 from pass_screen import PassScreen
 from placement_screen import PlacementScreen
 from win_screen import WinScreen
-from ai import AI
 
 # Initialize Pygame and set up the display
 pygame.init()
@@ -41,11 +40,9 @@ gameParams = {
     "num_ships": 0,
     "player1" : Player(1),
     "player2" : Player(2),
-    #"player2": AI(2),
     "screen" : pygame.display.set_mode((1000, 750)), #1000x750 pixel window
     "font" : pygame.font.Font(None,36), #Default font for text
-    "ai_mode": None,
-    "special_enabled": False
+    "attack_made": False
 }
 
 # Define color constants for easy reference throughout the game
@@ -68,6 +65,8 @@ def main():
     Main game loop that controls the flow of the game.
     """
     clock = pygame.time.Clock()
+    player1 = Player(1)
+    player2 = Player(2)
 
     while gameParams["game_running"]:
 
@@ -92,38 +91,45 @@ def main():
         # Start screen to select number of ships
         startScreen = StartScreen(gameParams, colorDict)
         startScreen.display()
-
         #Initialize other screens with new game parameters
-        placementScreen = PlacementScreen(colorDict, gameParams)
-        passScreen = PassScreen(colorDict, gameParams)
-        battleScreen = BattleScreen(colorDict, gameParams)
-        winScreen = WinScreen(colorDict, gameParams)
+        #placementScreen = PlacementScreen(colorDict, gameParams)
+        #passScreen = PassScreen(colorDict, gameParams)
+        battleScreen = BattleScreen(gameParams, colorDict)
+        #winScreen = WinScreen(colorDict, gameParams)
 
-        placementScreen.display(gameParams["player1"]) #Show player1's placement screen
-        if not gameParams["player2"].isAI: placementScreen.display(gameParams["player2"]) #If player2 is not AI, show their placement screen
-
-
-
+        #placementScreen.display(1)
 
         while gameParams["winner"] == None:
             # Player 1's turn
+<<<<<<< Updated upstream
+            winner = battleScreen.display(player1)
+            print(winner)
+            if winner:
+=======
             battleScreen.display(gameParams["player1"])
+            #print(gameParams["winner"])
             if gameParams["winner"]:
+>>>>>>> Stashed changes
                 break
-            passScreen.display(gameParams["player2"])
+            #passScreen.display(gameParams["player2"])
 
             # Player 2's turn
-            battleScreen.display(gameParams["player2"])
-            if gameParams["winner"]:
+            winner = battleScreen.display(player2)
+            if winner:
                 break
-            passScreen.display(gameParams["player1"])
+            #passScreen.display(gameParams["player1"])
 
         # Display winner and handle game end or restart
+<<<<<<< Updated upstream
+        #winScreen.display(winner)
+=======
         while gameParams["restart_game"] == False:
-            winScreen.display(gameParams["winner"])
+            winScreen.display(gameParams["winner"].player_id)
+>>>>>>> Stashed changes
 
         if not gameParams["game_running"]:
             break
+
 
 if __name__ == "__main__":
     main()

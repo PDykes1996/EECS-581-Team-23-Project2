@@ -14,7 +14,7 @@ class WinScreen:
     def end_game(self):
         self.gameParams["game_running"] = False
 
-    def display(self, player):
+    def display(self, player_id):
         """
         Display the winner screen and options for a new game or to end the game.
 
@@ -23,7 +23,7 @@ class WinScreen:
         """
         self.gameParams["screen"].fill(self.colors["WHITE"])  # Clear screen
         # Display winner text
-        text = self.gameParams["font"].render(f"Player {player.player_id} Wins!", True, self.colors["BLACK"])
+        text = self.gameParams["font"].render(f"Player {player_id} Wins!", True, self.colors["BLACK"])
         self.gameParams["screen"].blit(text, (380, 200))
 
     # Draw new game and end game buttons
