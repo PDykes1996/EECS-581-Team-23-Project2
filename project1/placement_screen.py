@@ -26,7 +26,7 @@ class PlacementScreen:
             self.gameParams["screen"].fill(self.colors["WHITE"])  # Clear screen
 
             # Display player instruction
-            self._draw_text(f"Player {player} Ship Placement", (350, 20))
+            self._draw_text(f"Player {player.player_id} Ship Placement", (350, 20))
 
             # Draw the placement grid
             self._draw_grid(grid)
@@ -74,7 +74,7 @@ class PlacementScreen:
             pygame.display.flip()
 
         # Store the placed ships for each player
-        self._store_ships(player, grid)
+        self._store_ships(player.player_id, grid)
 
     def _draw_text(self, text, pos):
         """Helper function to render and display text."""

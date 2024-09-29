@@ -101,21 +101,21 @@ def main():
 
 
 
-        while gameParams ["winner"] == None:
+        while gameParams["winner"] == None:
             # Player 1's turn
-            winner = battleScreen.display(gameParams["player1"])
-            if winner:
+            battleScreen.display(gameParams["player1"])
+            if gameParams["winner"]:
                 break
             passScreen.display(gameParams["player2"])
 
             # Player 2's turn
-            winner = battleScreen.display(gameParams["player2"])
-            if winner:
+            battleScreen.display(gameParams["player2"])
+            if gameParams["winner"]:
                 break
             passScreen.display(gameParams["player1"])
 
         # Display winner and handle game end or restart
-        winScreen.display(winner)
+        winScreen.display(gameParams["winner"])
 
         if not gameParams["game_running"]:
             break

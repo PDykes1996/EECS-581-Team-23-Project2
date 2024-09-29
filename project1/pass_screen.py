@@ -3,7 +3,7 @@ import pygame
 import sys
 
 class PassScreen:
-    def __init__(self, gameParams, colors):
+    def __init__(self, colors, gameParams):
         self.colors = colors # Dictionary of colors
         self.gameParams = gameParams
 
@@ -25,12 +25,12 @@ class PassScreen:
                 "text": "Finish",
                 "button_color": self.colors["LIGHT_GRAY"] ,
             }
-            passButton = Button(self.gameParams["screen"], self.gameParams["font"], passButtonParams)
+            passButton = Button(self.colors, self.gameParams, passButtonParams)
 
-            self.screen.fill(self.colors["WHITE"])  # Clear screen
+            self.gameParams["screen"].fill(self.colors["WHITE"])  # Clear screen
             # Display pass instruction
-            text = self.font.render(f"Pass to player {player.player_id}", True, self.colors["BLACK"])
-            self.screen.blit(text, (350, 20))
+            text = self.gameParams["font"].render(f"Pass to player {player.player_id}", True, self.colors["BLACK"])
+            self.gameParams["screen"].blit(text, (350, 20))
             # Draw finish button
             passButton.draw()
 
