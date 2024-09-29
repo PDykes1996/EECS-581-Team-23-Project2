@@ -78,16 +78,16 @@ class StartScreen:
         self.gameParams["screen"].blit(text, (250, 100))
 
         easy_button_params = {
-            "x": 300, "y": 200, "width": 200, "height": 50,
-            "action": self.set_difficulty("Easy"), "text": "Easy", "button_color": self.colors["LIGHT_GRAY"]
+            "x": 300, "y": 175, "width": 200, "height": 50,
+            "action": lambda: self.set_difficulty("Easy"), "text": "Easy", "button_color": self.colors["LIGHT_GRAY"]
         }
         medium_button_params = {
             "x": 300, "y": 350, "width": 200, "height": 50,
-            "action": self.set_difficulty("Medium"), "text": "Medium", "button_color": self.colors["LIGHT_GRAY"],
+            "action": lambda: self.set_difficulty("Medium"), "text": "Medium", "button_color": self.colors["LIGHT_GRAY"],
         }
         hard_button_params = {
-            "x": 300, "y": 500, "width": 200, "height": 50,
-            "action": self.set_difficulty("Hard"), "text": "Hard", "button_color": self.colors["LIGHT_GRAY"]
+            "x": 300, "y": 525, "width": 200, "height": 50,
+            "action": lambda: self.set_difficulty("Hard"), "text": "Hard", "button_color": self.colors["LIGHT_GRAY"]
         }
 
         easyButton = Button(self.colors, self.gameParams, easy_button_params)
