@@ -28,6 +28,7 @@ from battle_screen import BattleScreen
 from pass_screen import PassScreen
 from placement_screen import PlacementScreen
 from win_screen import WinScreen
+from ai import AI
 
 # Initialize Pygame and set up the display
 pygame.init()
@@ -39,9 +40,12 @@ gameParams = {
     "restart_game": False,
     "num_ships": 0,
     "player1" : Player(1),
-    "player2" : Player(2),
+    #"player2" : Player(2),
+    "player2": AI(2),
     "screen" : pygame.display.set_mode((1000, 750)), #1000x750 pixel window
     "font" : pygame.font.Font(None,36), #Default font for text
+    "ai_mode": None,
+    "special_enabled": False
 }
 
 # Define color constants for easy reference throughout the game

@@ -6,6 +6,7 @@ class Player:
         self.sunk_ships = []
         self.hits = [[None] * 10 for _ in range(10)]
         self.attack_grid = [[None for _ in range(10)] for _ in range(10)]
+        self.special_used = False
 
         if difficulty is None:
             self.difficulty = None
