@@ -7,14 +7,15 @@ class StartScreen:
         self.colors = colorDict
         self.gameParams = gameParams
         self.play_mode_selected = False  # Indicates if Player vs AI or Player vs Player mode has been selected
-        self.ai_mode = False  # Tracks if AI mode is selected
-        self.difficulty_selected = False  # Tracks if AI difficulty has been selected
+        self.ai_mode = None  # Tracks if AI mode is selected
+        self.difficulty_selected = None  # Tracks if AI difficulty has been selected
         self.ship_selection_active = False  # Controls when to display ship selection
 
     def display(self):
         """
         Display the start screen where players select the game mode, AI difficulty (if applicable), and number of ships.
         """
+
         while self.gameParams["num_ships"] == 0:  # Loop until the number of ships is selected
             self.gameParams["screen"].fill(self.colors["WHITE"])  # Clear the screen with a white background
 
@@ -44,11 +45,11 @@ class StartScreen:
         self.gameParams["screen"].blit(text, (250, 100))
 
         player_button_params = {
-            "x": 250, "y": 200, "width": 200, "height": 50,
+            "x": 300, "y": 200, "width": 200, "height": 50,
             "button_color": self.colors["LIGHT_GRAY"], "action": self.select_player_mode, "text": "Player vs Player"
         }
         ai_button_params = {
-            "x": 250, "y": 300, "width": 200, "height": 50,
+            "x": 300, "y": 300, "width": 200, "height": 50,
             "button_color": self.colors["LIGHT_GRAY"], "action": self.select_ai_mode, "text": "Player vs AI"
         }
 
@@ -77,16 +78,16 @@ class StartScreen:
         self.gameParams["screen"].blit(text, (250, 100))
 
         easy_button_params = {
-            "x": 250, "y": 200, "width": 200, "height": 50,
-            "button_color": self.colors["LIGHT_GRAY"], "action": lambda: self.set_difficulty("Easy"), "text": "Easy"
+            "x": 300, "y": 200, "width": 200, "height": 50,
+            "action": self.set_easy, "text": "Easy", "button_color": self.colors["LIGHT_GRAY"]
         }
         medium_button_params = {
-            "x": 250, "y": 300, "width": 200, "height": 50,
-            "button_color": self.colors["LIGHT_GRAY"], "action": lambda: self.set_difficulty("Medium"), "text": "Medium"
+            "x": 300, "y": 350, "width": 200, "height": 50,
+            "action": self.set_medium, "text": "Medium", "button_color": self.colors["LIGHT_GRAY"],
         }
         hard_button_params = {
-            "x": 250, "y": 400, "width": 200, "height": 50,
-            "button_color": self.colors["LIGHT_GRAY"], "action": lambda: self.set_difficulty("Hard"), "text": "Hard"
+            "x": 300, "y": 500, "width": 200, "height": 50,
+            "action": self.set_hard, "text": "Hard", "button_color": self.colors["LIGHT_GRAY"]
         }
 
         easyButton = Button(self.colors, self.gameParams, easy_button_params)
@@ -97,11 +98,28 @@ class StartScreen:
         mediumButton.draw()
         hardButton.draw()
 
+    def set_easy(self):
+        self.gameParams["ai_difficulty"] = "Easy"
+        self.difficulty_selected = True
+        self.ship_selection_active = True  # Now allow ship selection after difficulty
+
+    def set_medium(self):
+        self.gameParams["ai_difficulty"] = "Medium"
+        self.difficulty_selected = True
+        self.ship_selection_active = True  # Now allow ship selection after difficulty
+
+    def set_hard(self):
+        self.gameParams["ai_difficulty"] = "Hard"
+        self.difficulty_selected = True
+        self.ship_selection_active = True  # Now allow ship selection after difficulty
+
+    """
     def set_difficulty(self, difficulty):
-        """Set the AI difficulty and proceed to ship selection."""
+        #Set the AI difficulty and proceed to ship selection.
         self.gameParams["ai_difficulty"] = difficulty
         self.difficulty_selected = True
         self.ship_selection_active = True  # Now allow ship selection after difficulty
+    """
 
     def display_ship_selection(self):
         """

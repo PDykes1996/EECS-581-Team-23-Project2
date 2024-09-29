@@ -43,6 +43,7 @@ class Button:
         self.enabled = enabled
         self.buttonParams = buttonParams
         self.button_clicked = False
+        self.rect = None
 
     def draw(self):
         """
