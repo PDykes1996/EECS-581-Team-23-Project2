@@ -3,7 +3,7 @@
 ## Team 23 Members
 
 Paul Dykes,
-John,
+John Mosely,
 Spencer Addis,
-Mann,
-Will,
+Aryamann Zutshi,
+Will Battey
