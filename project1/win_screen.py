@@ -23,8 +23,8 @@ class WinScreen:
         """
         self.gameParams["screen"].fill(self.colors["WHITE"])  # Clear screen
         # Display winner text
-        text = self.gameParams["font"].render(f"Player {player} Wins!", True, self.colors["BLACK"])
-        self.gameParams["screen"].blit(text, (350, 200))
+        text = self.gameParams["font"].render(f"Player {player.player_id} Wins!", True, self.colors["BLACK"])
+        self.gameParams["screen"].blit(text, (380, 200))
 
     # Draw new game and end game buttons
         newGameButtonParams = {
@@ -50,20 +50,19 @@ class WinScreen:
         newGameButton.draw()
         endGameButton.draw()
 
-        while True:
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    pygame.quit()
-                    sys.exit()
-                if event.type == pygame.MOUSEBUTTONDOWN:
-                    mouse_pos = pygame.mouse.get_pos()
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                mouse_pos = pygame.mouse.get_pos()
 
-                    if newGameButton.click(mouse_pos):
-                        self.new_game()
-                        return
-                    elif endGameButton.click(mouse_pos):
-                        self.end_game()
-                        return
+                if newGameButton.click(mouse_pos):
+                    self.new_game()
+                    return
+                elif endGameButton.click(mouse_pos):
+                    self.end_game()
+                    return
 
                 '''
                 if 300 <= mouse_pos[0] <= 450 and 400 <= mouse_pos[1] <= 450:

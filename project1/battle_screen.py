@@ -65,25 +65,26 @@ class BattleScreen:
                     pygame.draw.line(screen, self.colors["RED"], (cell_x + 5, cell_y + 5), (cell_x + 25, cell_y + 25), 2)
                     pygame.draw.line(screen, self.colors["RED"], (cell_x + 25, cell_y + 5), (cell_x + 5, cell_y + 25), 2)
 
-    def handle_attack(self, event,  gridParams):
+    def handle_attack(self, event, opponentGridParams):
         #Extract grid parameters
-        player = gridParams["player"] #Get player from the grid parameters
-        opponent = self.gameParams["player2"] if player.player_id == 1 else self.gameParams["player1"] #Get opponent from the game parameters
+        #player = gridParams["player"] #Get player from the grid parameters
+        #opponent = self.gameParams["player2"] if player.player_id == 1 else self.gameParams["player1"] #Get opponent from the game parameters
+        opponent = opponentGridParams["player"] #Get player from the grid parameters
 
         if event.type == pygame.MOUSEBUTTONDOWN:
-            x, y = (event.pos[0] - 50) // gridParams["cell_size"], (event.pos[1] - 100) // gridParams["cell_size"]
+            x, y = (event.pos[0] - opponentGridParams["grid_x"]) // opponentGridParams["cell_size"], (event.pos[1] - opponentGridParams["grid_y"]) // opponentGridParams["cell_size"]
             if 0 <= x < 10 and 0 <= y < 10:
-                if player.hits[y][x] is None:
+                if opponent.hits[y][x] is None:
                     ship = self.get_ship(opponent, x, y)
                     if ship:
-                        player.hits[y][x] = 'H'  # Mark as hit
-                        if self.check_ship_sunk(player, ship):
+                        opponent.hits[y][x] = 'H'  # Mark as hit
+                        if self.check_ship_sunk(opponent, ship):
                             opponent.sunk_ships.append(ship['coords'])
                             return "Sink!"
                         else:
                             return "Hit!"
                     else:
-                        player.hits[y][x] = 'M'  # Mark as miss
+                        opponent.hits[y][x] = 'M'  # Mark as miss
                         return "Miss!"
                 else:
                     return "Already Attacked!"
@@ -176,7 +177,7 @@ class BattleScreen:
 
 
                 if not attack_made:
-                    shot_result = self.handle_attack(event, playerGridParams)
+                    shot_result = self.handle_attack(event, opponentGridParams)
                     if shot_result:
                         attack_made = True
 

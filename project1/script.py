@@ -115,7 +115,8 @@ def main():
             passScreen.display(gameParams["player1"])
 
         # Display winner and handle game end or restart
-        winScreen.display(gameParams["winner"])
+        while gameParams["restart_game"] == False:
+            winScreen.display(gameParams["winner"])
 
         if not gameParams["game_running"]:
             break
