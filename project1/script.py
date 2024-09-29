@@ -35,7 +35,6 @@ pygame.init()
 
 gameParams = {
     "winner" : None,
-    "finished": False,
     "game_running": True,
     "restart_game": False,
     "num_ships": 0,
@@ -44,9 +43,6 @@ gameParams = {
     "screen" : pygame.display.set_mode((1000, 750)), #1000x750 pixel window
     "font" : pygame.font.Font(None,36), #Default font for text
 }
-
-
-
 
 # Define color constants for easy reference throughout the game
 colorDict = {
@@ -99,26 +95,27 @@ def main():
         battleScreen = BattleScreen(colorDict, gameParams)
         winScreen = WinScreen(colorDict, gameParams)
 
-        placementScreen.display()
+        placementScreen.display(gameParams["player1"])
+        placementScreen.display(gameParams["player2"])
 
 
 
 
-        while gameParams ["winner"] == None:
+        while gameParams["winner"] == None:
             # Player 1's turn
-            winner = battleScreen.display(gameParams["player1"], gameParams["player2"])
-            if winner:
+            battleScreen.display(gameParams["player1"])
+            if gameParams["winner"]:
                 break
             passScreen.display(gameParams["player2"])
 
             # Player 2's turn
-            winner = battleScreen.display(gameParams["player2"], gameParams["player1"])
-            if winner:
+            battleScreen.display(gameParams["player2"])
+            if gameParams["winner"]:
                 break
             passScreen.display(gameParams["player1"])
 
         # Display winner and handle game end or restart
-        winScreen.display(winner)
+        winScreen.display(gameParams["winner"])
 
         if not gameParams["game_running"]:
             break
