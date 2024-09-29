@@ -85,16 +85,16 @@ class StartScreen:
 
         # parameters for easy mode button
         easy_button_params = {
-            "x": 300, "y": 200, "width": 200, "height": 50, # dimensions for button
-            "action": self.set_easy, "text": "Easy", "button_color": self.colors["LIGHT_GRAY"] # color, action, label
+            "x": 300, "y": 175, "width": 200, "height": 50, # dimensions for button
+            "action": lambda: self.set_difficulty("Easy"), "text": "Easy", "button_color": self.colors["LIGHT_GRAY"] # color, action, label
         }
         medium_button_params = {
             "x": 300, "y": 350, "width": 200, "height": 50, # dimensions for button
-            "action": self.set_medium, "text": "Medium", "button_color": self.colors["LIGHT_GRAY"] # color, action, label
+            "action": lambda: self.set_difficulty("Medium"), "text": "Medium", "button_color": self.colors["LIGHT_GRAY"] # color, action, label
         }
         hard_button_params = {
-            "x": 300, "y": 500, "width": 200, "height": 50, # dimensions for button
-            "action": self.set_hard, "text": "Hard", "button_color": self.colors["LIGHT_GRAY"] # color, action, label
+            "x": 300, "y": 525, "width": 200, "height": 50, # dimensions for button
+            "action": lambda: self.set_difficulty("Hard"), "text": "Hard", "button_color": self.colors["LIGHT_GRAY"] # color, action, label
         }
 
         easyButton = Button(self.colors, self.gameParams, easy_button_params) # easy button created 
@@ -105,20 +105,11 @@ class StartScreen:
         mediumButton.draw()
         hardButton.draw()
 
-    def set_easy(self): # set game mode to easy difficulty
-        self.gameParams["ai_difficulty"] = "Easy" # ai difficulty set to easy (passed to ai)
-        self.difficulty_selected = True # store the fact that difficulty has completed being selected
-        self.ship_selection_active = True  # now allow ship selection after difficulty
-
-    def set_medium(self):
-        self.gameParams["ai_difficulty"] = "Medium"  # ai difficulty set to medium (passed to ai)
-        self.difficulty_selected = True # store the fact that difficulty has completed being selected
-        self.ship_selection_active = True  # now allow ship selection after difficulty
-
-    def set_hard(self):
-        self.gameParams["ai_difficulty"] = "Hard" # ai difficulty set to hard (passed to ai)
-        self.difficulty_selected = True # store the fact that difficulty has completed being selected
-        self.ship_selection_active = True  # now allow ship selection after difficulty
+    def set_difficulty(self, difficulty):
+        # Set the AI difficulty and proceed to ship selection.
+        self.gameParams["ai_difficulty"] = difficulty
+        self.difficulty_selected = True
+        self.ship_selection_active = True
 
     """
     def set_difficulty(self, difficulty):
