@@ -61,7 +61,7 @@ class BattleScreen:
                 "circle_radius" : 10,
             }
         else:
-            self.playGridParams ={
+            self.playGridParams = {
                 "grid_x" : 100,
                 "grid_y" : 130,
                 "cell_size" : 45,
@@ -115,17 +115,17 @@ class BattleScreen:
             )
 
             if 0 <= x < 10 and 0 <= y < 10:
-                if hits_grid[y][x] is None:
+                if opponent.hits[y][x] is None:
                     ship = self.get_ship(opponent, x, y)
                     if ship:
-                        hits_grid[y][x] = 'H'  # Mark as hit
+                        opponent.hits[y][x] = 'H'  # Mark as hit
                         if self.check_ship_sunk(player, ship):
                             opponent_sunk_ships.append(ship['coords'])
                             return "Sink!"
                         else:
                             return "Hit!"
                     else:
-                        hits_grid[y][x] = 'M'  # Mark as miss
+                        opponent.hits[y][x] = 'M'  # Mark as miss
                         return "Miss!"
                 else:
                     return "Already Attacked!"
