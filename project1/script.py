@@ -40,8 +40,8 @@ gameParams = {
     "restart_game": False,
     "num_ships": 0,
     "player1" : Player(1),
-    #"player2" : Player(2),
-    "player2": AI(2),
+    "player2" : Player(2),
+    #"player2": AI(2),
     "screen" : pygame.display.set_mode((1000, 750)), #1000x750 pixel window
     "font" : pygame.font.Font(None,36), #Default font for text
     "ai_mode": None,
@@ -99,8 +99,8 @@ def main():
         battleScreen = BattleScreen(colorDict, gameParams)
         winScreen = WinScreen(colorDict, gameParams)
 
-        placementScreen.display(gameParams["player1"])
-        placementScreen.display(gameParams["player2"])
+        placementScreen.display(gameParams["player1"]) #Show player1's placement screen
+        if not gameParams["player2"].isAI: placementScreen.display(gameParams["player2"]) #If player2 is not AI, show their placement screen
 
 
 

@@ -24,9 +24,8 @@ class PlacementScreen:
             "num_ships": (int), Number of ships to place
             "player1" : (Player), Player 1 object
             "player2" : (Player), Player 2 object. Can be AI or human
-            "screen" : pygame.display.set_mode((1000, 750)), #1000x750 pixel window
-            "font" : pygame.font.Font(None,36), #Default font for text
-            "ai_mode": None,
+            "screen" : Game Window
+            "font" : Default font for text
             "special_enabled": False
         }
         """
