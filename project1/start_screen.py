@@ -107,9 +107,9 @@ class StartScreen:
 
     def set_difficulty(self, difficulty):
         # Set the AI difficulty and proceed to ship selection.
-        self.gameParams["ai_difficulty"] = difficulty
-        self.difficulty_selected = True
-        self.ship_selection_active = True
+        self.gameParams["ai_difficulty"] = difficulty # ai difficulty is passed into parameters
+        self.difficulty_selected = True # imply that difficulty has been selected
+        self.ship_selection_active = True # and signal that ship selection is ready
 
     """
     def set_difficulty(self, difficulty):
