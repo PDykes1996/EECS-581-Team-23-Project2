@@ -13,7 +13,7 @@ class BattleScreen:
     #opponent_sunk_ships = player2_sunk_ships if player == 1 else player1_sunk_ships
     #opponent_hits = player2_hits if player == 1 else player1_hits
     
-    def __init__(self, gameParams, colors):
+    def __init__(self, colors, gameParams):
         self.gameParams = gameParams
         self.colors = colors
 

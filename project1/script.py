@@ -35,7 +35,6 @@ pygame.init()
 
 gameParams = {
     "winner" : None,
-    "finished": False,
     "game_running": True,
     "restart_game": False,
     "num_ships": 0,
@@ -96,20 +95,21 @@ def main():
         battleScreen = BattleScreen(colorDict, gameParams)
         winScreen = WinScreen(colorDict, gameParams)
 
-        placementScreen.display(1)
+        placementScreen.display(gameParams["player1"])
+        placementScreen.display(gameParams["player2"])
 
 
 
 
         while gameParams ["winner"] == None:
             # Player 1's turn
-            winner = battleScreen.display(gameParams["player1"], gameParams["player2"])
+            winner = battleScreen.display(gameParams["player1"])
             if winner:
                 break
             passScreen.display(gameParams["player2"])
 
             # Player 2's turn
-            winner = battleScreen.display(gameParams["player2"], gameParams["player1"])
+            winner = battleScreen.display(gameParams["player2"])
             if winner:
                 break
             passScreen.display(gameParams["player1"])
