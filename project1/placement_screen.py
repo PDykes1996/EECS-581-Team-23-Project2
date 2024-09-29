@@ -5,6 +5,31 @@ from button import Button
 
 class PlacementScreen:
     def __init__(self, colors, gameParams):
+        """
+        colors (dict): A dictionary containing color names as keys and RGB tuples as values.
+        {
+            "WHITE"
+            "BLACK"
+            "LIGHT_GRAY"
+            "DARK_GRAY" 
+            "LIGHT_BLUE" 
+            "RED" 
+            "GRID_BLUE"
+        }
+        gameParams (dict): A dictionary containing game parameters.
+        {
+            "winner" : Boolean, Indicates if there is a winner
+            "game_running": Boolean, True while game running
+            "restart_game": Boolean, True if game is to be restarted
+            "num_ships": (int), Number of ships to place
+            "player1" : (Player), Player 1 object
+            "player2" : (Player), Player 2 object. Can be AI or human
+            "screen" : pygame.display.set_mode((1000, 750)), #1000x750 pixel window
+            "font" : pygame.font.Font(None,36), #Default font for text
+            "ai_mode": None,
+            "special_enabled": False
+        }
+        """
         self.colors = colors
         self.gameParams = gameParams
 
