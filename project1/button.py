@@ -56,13 +56,14 @@ class Button:
         enabled (bool): Whether the button is clickable
         """
 
-        x = self.buttonParams["x"]
-        y = self.buttonParams["y"]
-        width = self.buttonParams["width"]
-        height = self.buttonParams["height"]
-        action = self.buttonParams["action"]
+        #Assign button parameters with default cases in case they are not provided
+        x = self.buttonParams.get("x", 0)
+        y = self.buttonParams.get("y", 0)
+        width = self.buttonParams.get("width", 100)
+        height = self.buttonParams.get("height", 50)
+        button_color = self.buttonParams.get("button_color", self.colors["LIGHT_GRAY"])
+        action = self.buttonParams.get("action", None) #Get the action function if it exists
         text = self.buttonParams["text"]
-        button_color = self.buttonParams["button_color"]
 
         self.rect = pygame.Rect(x, y, width, height)  # Initialize rect
 
@@ -75,16 +76,24 @@ class Button:
         else:
             pygame.draw.rect(self.gameParams["screen"], self.colors["DARK_GRAY"], (x, y, width, height))  # Use dark gray for disabled buttons
 
-        #Render the button text
+        # Check if the mouse is over the button
+        if self.enabled and self.rect.collidepoint(mouse):
+            # Change button color on hover
+            pygame.draw.rect(self.gameParams["screen"], self.colors["LIGHT_BLUE"], self.rect)
+            if click[0] == 1 and not self.button_clicked:
+                self.button_clicked = True
+                if action:
+                    action()
+            elif click[0] == 0:
+                self.button_clicked = False
+        else:
+            pygame.draw.rect(self.gameParams["screen"], button_color, self.rect)
+
+        # Render button text
+        text_color = self.colors["BLACK"] if self.enabled else self.colors["LIGHT_GRAY"]
         text_surf = self.gameParams["font"].render(text, True, self.colors["BLACK"])
-        # Calculate position to center the text on the button
         text_pos = (x + width // 2 - text_surf.get_width() // 2, y + height // 2 - text_surf.get_height() // 2)
         self.gameParams["screen"].blit(text_surf, text_pos)
-
-        # Check if the mouse is over the button and it's clicked
-        if self.enabled and x < mouse[0] < x + width and y < mouse[1] < y + height:
-            if click[0] == 1 and action is not None:
-                action()  # Execute the given action when clicked
 
     def click(self, mouse_pos):
         return self.rect.collidepoint(mouse_pos)
