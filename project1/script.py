@@ -45,9 +45,6 @@ gameParams = {
     "font" : pygame.font.Font(None,36), #Default font for text
 }
 
-
-
-
 # Define color constants for easy reference throughout the game
 colorDict = {
     "WHITE" : (255, 255, 255),
@@ -99,7 +96,7 @@ def main():
         battleScreen = BattleScreen(colorDict, gameParams)
         winScreen = WinScreen(colorDict, gameParams)
 
-        placementScreen.display()
+        placementScreen.display(1)
 
 
 

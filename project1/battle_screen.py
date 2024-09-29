@@ -1,5 +1,7 @@
 from player import Player
+from button import Button
 import pygame
+import sys
 
 class BattleScreen:
     
@@ -11,11 +13,11 @@ class BattleScreen:
     #opponent_sunk_ships = player2_sunk_ships if player == 1 else player1_sunk_ships
     #opponent_hits = player2_hits if player == 1 else player1_hits
     
-    def _init_(self, gameParams, colors):
+    def __init__(self, gameParams, colors):
         self.gameParams = gameParams
         self.colors = colors
 
-        playGridParams ={
+        self.playGridParams ={
             "grid_x" : 600,
             "grid_y" : 130,
             "cell_size" : 30,
@@ -37,6 +39,53 @@ class BattleScreen:
         int: 0 if no winner, or the winning player number
         """
     
+    def draw_grid(self, grid_x, grid_y, label, hits_grid, ships, sunk_ships, opponent=False):
+        # Draw grid label
+        label_text = self.gameParams["font"].render(label, True, self.colors["BLACK"])
+        self.gameParams["screen"].blit(label_text, (grid_x, grid_y - 60))
+
+        # Draw the grid cells
+        for i in range(10):
+            for j in range(10):
+                cell_x = grid_x + i * self.playGridParams["cell_size"]
+                cell_y = grid_y + j * self.playGridParams["cell_size"]
+
+                # Draw grid cell and border
+                pygame.draw.rect(self.gameParams["screen"], self.colors["LIGHT_BLUE"], (cell_x, cell_y, self.playGridParams["cell_size"], self.playGridParams["cell_size"]))
+                pygame.draw.rect(self.gameParams["screen"], self.colors["BLACK"], (cell_x, cell_y, self.playGridParams["cell_size"], self.playGridParams["cell_size"]), 1)
+
+                # Draw ships and hits for the player's grid
+                if not opponent:
+                    if any((j, i) in ship['coords'] for ship in ships):
+                        pygame.draw.rect(self.gameParams["screen"], self.colors["DARK_GRAY"], (cell_x, cell_y, self.playGridParams["cell_size"], self.playGridParams["cell_size"]))
+                    if (j, i) in [(y, x) for ship in sunk_ships for y, x in ship]:
+                        pygame.draw.rect(self.gameParams["screen"], self.colors["RED"], (cell_x, cell_y, self.playGridParams["cell_size"], self.playGridParams["cell_size"]))
+                # Draw hit and miss markers
+                if hits_grid[j][i] == 'M':
+                    pygame.draw.circle(self.gameParams["screen"], self.colors["WHITE"], (cell_x + 15, cell_y + 15), 10, 2)
+                elif hits_grid[j][i] == 'H':
+                    pygame.draw.line(self.gameParams["screen"], self.colors["RED"], (cell_x + 5, cell_y + 5), (cell_x + 25, cell_y + 25), 2)
+                    pygame.draw.line(self.gameParams["screen"], self.colors["RED"], (cell_x + 25, cell_y + 5), (cell_x + 5, cell_y + 25), 2)
+
+    def handle_attack(self, event, player, opponent, hits_grid, opponent_sunk_ships):
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            x, y = (event.pos[0] - 50) // self.playGridParams["cell_size"], (event.pos[1] - 100) // self.playGridParams["cell_size"]
+            if 0 <= x < 10 and 0 <= y < 10:
+                if hits_grid[y][x] is None:
+                    ship = self.get_ship(opponent, x, y)
+                    if ship:
+                        hits_grid[y][x] = 'H'  # Mark as hit
+                        if self.check_ship_sunk(player, ship):
+                            opponent_sunk_ships.append(ship['coords'])
+                            return "Sink!"
+                        else:
+                            return "Hit!"
+                    else:
+                        hits_grid[y][x] = 'M'  # Mark as miss
+                        return "Miss!"
+                else:
+                    return "Already Attacked!"
+        return None
 
     def get_ship(self, opponent, x, y):
         """Find the ship at the given coordinates."""
@@ -55,105 +104,56 @@ class BattleScreen:
         return all(self.check_ship_sunk(ship) for ship in player_ships)
 
     def display(self, player):
-        if player.player_id == 1:
-            opponent = self.gameParams["player2"]
-        else:
-            opponent = self.gameParams["player1"]
+        # Determine opponent
+        opponent = self.gameParams["player2"] if player.player_id == 1 else self.gameParams["player1"]
+        finished = False
+        attack_made = False
+        shot_result = None
 
         while not finished:
-            self.screen.fill(self.gameParams["WHITE"])  # Clear screen
-            # Display player instruction
-            text = self.gameParams["font"].render(f"Player {player}: Select a cell to attack", True, self.colors["BLACK"])
+            self.gameParams["screen"].fill(self.colors["WHITE"])  # Clear the screen
+
+            # Display instruction for the current player
+            text = self.gameParams["font"].render(f"Player {player.player_id}: Select a cell to attack", True, self.colors["BLACK"])
             self.gameParams["screen"].blit(text, (300, 20))
 
-            # Draw opponent's grid (for attacks)
-            for i in range(10):
-                for j in range(10):
-                    pygame.draw.rect(self.gameParams["screen"], self.colors["GRID_BLUE"], (50 + i * 50, 100 + j * 50, 50, 50))
-                    pygame.draw.rect(self.gameParams["screen"], self.colors["BLACK"], (50 + i * 50, 100 + j * 50, 50, 50), 1)
-                    self.gameParams["screen"].blit(self.gameParams["font"].render(chr(65 + i), True, self.colors["BLACK"]), (65 + i * 50, 70))
-                    self.gameParams["screen"].blit(self.gameParams["font"].render(str(j + 1), True, self.colors["BLACK"]), (20, 115 + j * 50))
-
-                    # Draw hit and miss markers
-                    if player.hits[j][i] == 'M':
-                        pygame.draw.circle(self.gameParams["screen"], self.colors["WHITE"], (75 + i * 50, 125 + j * 50), 20, 2)
-                    elif player.hits[j][i] == 'H':
-                        ship = self.get_ship(i, j)
-                        if ship and ship['coords'] in opponent.sunk_ships:
-                            pygame.draw.rect(self.gameParams["screen"], self.colors["RED"], (50 + i * 50, 100 + j * 50, 50, 50))
-                        else:
-                            pygame.draw.line(self.gameParams["screen"], self.colors["RED"], (60 + i * 50, 110 + j * 50), (90 + i * 50, 140 + j * 50), 3)
-                            pygame.draw.line(self.gameParams["screen"], self.colors["RED"], (90 + i * 50, 110 + j * 50), (60 + i * 50, 140 + j * 50), 3)
-
-        # Draw player's own grid
-            your_grid_text = self.gameParams["font"].render("Your Grid", True, self.colors["BLACK"])
-            self.gameParams["screen"].blit(your_grid_text, (600, 70))
-            for i in range(10):
-                for j in range(10):
-                    cell_top_left_x = 
-
-                    pygame.draw.rect(self.gameParams["screen"], self.colors["LIGHT_BLUE"], (600 + i * 30, 130 + j * 30, 30, 30))
-                    pygame.draw.rect(self.gameParams["screen"], self.colors["BLACK"], (600 + i * 30, 130 + j * 30, 30, 30), 1)
-                    self.gameParams["screen"].blit(self.gameParams["font"].render(chr(65 + i), True, self.colors["BLACK"]), (610 + i * 30, 100))
-                    self.gameparams["screen"].blit(self.gameParams["font"].render(str(j + 1), True, self.colors["BLACK"]), (570, 135 + j * 30))
-
-                    # Draw player's ships and hit markers
-                    if any((j, i) in ship['coords'] for ship in player.ships):
-                        pygame.draw.rect(self.gameParams["screen"], self.colors["DARK_GRAY"], (600 + i * 30, 130 + j * 30, 30, 30))
-                    if (j, i) in [(y, x) for ship in player.sunk_ships for y, x in ship]:
-                        pygame.draw.rect(self.gameParams["screen"], self.colors["RED"], (600 + i * 30, 130 + j * 30, 30, 30))
-                    elif opponent.hits[j][i] == 'H':
-                        pygame.draw.line(self.gameParams["screen"], self.colors["RED"], (605 + i * 30, 135 + j * 30), (625 + i * 30, 155 + j * 30), 2)
-                        pygame.draw.line(self.gameParams["screen"], self.colors["RED"], (625 + i * 30, 135 + j * 30), (605 + i * 30, 155 + j * 30), 2)
-                    elif opponent.hits[j][i] == 'M':
-                        pygame.draw.circle(self.gameParams["screen"], self.colors["WHITE"], (615 + i * 30, 145 + j * 30), 10, 2)
+            # Draw the opponent's grid (for attacks) and player's own grid
+            self.draw_grid(self.playGridParams["grid_x"], self.playGridParams["grid_y"], "Opponent's Grid", opponent.hits, opponent.ships, opponent.sunk_ships, opponent=True)
+            self.draw_grid(600, 130, "Your Grid", player.hits, player.ships, player.sunk_ships)
 
             if shot_result:
-                result_text = font.render(shot_result, True, self.colors["BLACK"])
-                screen.blit(result_text, (400, 650))
+                result_text = self.gameParams["font"].render(shot_result, True, self.colors["BLACK"])
+                self.gameParams["screen"].blit(result_text, (400, 650))
 
-            # Draw finish turn button
-            draw_button("Finish Turn", 800, 600, 150, 50, LIGHT_GRAY, lambda: globals().update(finished=True),
-                    enabled=attack_made)
-
+            # Draw the finish turn button
+            finish_turn_buttonParams = {
+                "x": 800,
+                "y": 600,
+                "width": 150,
+                "height": 50,
+                "action": None,
+                "text": "Finish Turn",
+                "button_color": lambda: setattr(self, 'finished', True),
+            }
+            finish_turn_button = Button(self.colors, self.gameParams, finish_turn_buttonParams, enabled = attack_made )
+            finish_turn_button.draw()
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit()
-                if event.type == pygame.MOUSEBUTTONDOWN and not attack_made:
-                    x, y = (event.pos[0] - 50) // 50, (event.pos[1] - 100) // 50
-                    if 0 <= x < 10 and 0 <= y < 10:
-                        if hits_grid[y][x] is None:
-                            ship = get_ship(x, y)
-                            if ship:
-                                hits_grid[y][x] = 'H'  # Mark as hit
-                                if check_ship_sunk(ship):
-                                    opponent_sunk_ships.append(ship['coords'])
-                                    shot_result = "Sink!"
-                                else:
-                                    shot_result = "Hit!"
-                            else:
-                                hits_grid[y][x] = 'M'  # Mark as miss
-                                shot_result = "Miss!"
-                            attack_made = True
-                        else:
-                            shot_result = "Already Attacked!"
+                if not attack_made:
+                    shot_result = self.handle_attack(event, player, opponent, player.hits, opponent.sunk_ships)
+                    if shot_result:
+                        attack_made = True
 
             pygame.display.flip()  # Update the display
 
             # Check for a winner
-        if all_ships_sunk(opponent_ships):
-            finished = True
-            winner = player
-            return winner
-        else:
-            return 0
-
-    # Update sunk ships for the correct player
-        if player == 1:
-            player2_sunk_ships = opponent_sunk_ships
-        else:
-            player1_sunk_ships = opponent_sunk_ships
+            if self.all_ships_sunk(opponent.ships):
+                finished = True
+                return player.player_id  # Return the winning player ID
+            else:
+                return 0  # Continue the game
 
 
 

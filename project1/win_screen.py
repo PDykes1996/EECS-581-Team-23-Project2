@@ -4,21 +4,15 @@ from player import Player
 from button import Button
 
 class WinScreen:
-    def __init__(self, players, screen, font, colors, gameParams):
-        self.player1 = players[0]
-        self.player2 = players[1]
-        self.screen = screen
-        self.font = font
+    def __init__(self, colors, gameParams):
         self.colors = colors
         self.gameParams = gameParams
     
     def new_game(self):
-        global restart_game
-        restart_game = True
+        self.gameParams["restart_game"] = True
 
     def end_game(self):
-        global game_running
-        game_running = False
+        self.gameParams["game_running"] = False
 
     def display(self, player):
         """
@@ -27,18 +21,34 @@ class WinScreen:
         Args:
         player (int): The winning player number
         """
-        global game_running, restart_game
-        self.screen.fill(self.colors["WHITE"])  # Clear screen
+        self.gameParams["screen"].fill(self.colors["WHITE"])  # Clear screen
         # Display winner text
-        text = self.font.render(f"Player {player} Wins!", True, self.colors["BLACK"])
-        self.screen.blit(text, (350, 200))
+        text = self.gameParams["font"].render(f"Player {player} Wins!", True, self.colors["BLACK"])
+        self.gameParams["screen"].blit(text, (350, 200))
 
     # Draw new game and end game buttons
-        newGameButton = Button("New Game", 300, 400, 150, 50, self.colors["LIGHT_GRAY"], action=self.new_game)
-        endGameButton = Button("End Game", 500, 400, 150, 50, self.colors["LIGHT_GRAY"], action=self.end_game)
-
-        newGameButton.draw(self.screen, self.font)
-        endGameButton.draw(self.screen, self.font)
+        newGameButtonParams = {
+            "x": 300,
+            "y": 400,
+            "width": 150,
+            "height": 50,
+            "button_color": self.colors["LIGHT_GRAY"],
+            "action": self.new_game,
+            "text": "New Game"
+        }
+        endGameButtonParams = {
+            "x": 500,
+            "y": 400,
+            "width": 150,
+            "height": 50,
+            "button_color": self.colors["LIGHT_GRAY"],
+            "action": self.end_game,
+            "text": "End Game"
+        }
+        newGameButton = Button(self.colors, self.gameParams, newGameButtonParams)
+        endGameButton = Button(self.colors, self.gameParams, endGameButtonParams)
+        newGameButton.draw()
+        endGameButton.draw()
 
         while True:
             for event in pygame.event.get():

@@ -42,6 +42,7 @@ class Button:
         self.gameParams = gameParams #Game parameters dictionary
         self.enabled = enabled
         self.buttonParams = buttonParams
+        self.button_clicked = False
 
     def draw(self):
         """

@@ -39,7 +39,7 @@ class StartScreen:
                     pygame.quit()
                     sys.exit()
 
-        pygame.display.flip()  # Update the display
+            pygame.display.flip()  # Update the display
 
     def set_num_ships(self, num):
         self.gameParams["num_ships"] = num
