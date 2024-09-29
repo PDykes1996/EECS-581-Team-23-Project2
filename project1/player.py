@@ -1,7 +1,7 @@
 class Player:
     def __init__(self, player_id, difficulty=None):
         self.player_id = player_id
-        self.ships = None
+        self.ships = [] # changed initial value from None to empty list
         self.sunk_ships = []
         self.hits = [[None] * 10 for _ in range(10)]
         self.attack_grid = [[None for _ in range(10)] for _ in range(10)]
