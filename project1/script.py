@@ -54,6 +54,13 @@ colorDict = {
     "RED" : (255, 0, 0),
     "GRID_BLUE" : (10, 150, 210),
 }
+#Initialize other screens with new game parameters
+startScreen = StartScreen(gameParams, colorDict)
+placementScreen = PlacementScreen(colorDict, gameParams)
+passScreen = PassScreen(colorDict, gameParams)
+battleScreen = BattleScreen(colorDict, gameParams)
+winScreen = WinScreen(colorDict, gameParams)
+
 
 def main():
     """
@@ -83,14 +90,10 @@ def main():
             continue
         
         # Start screen to select number of ships
-        startScreen = StartScreen(gameParams, colorDict)
+
         startScreen.display()
 
-        #Initialize other screens with new game parameters
-        placementScreen = PlacementScreen(colorDict, gameParams)
-        passScreen = PassScreen(colorDict, gameParams)
-        battleScreen = BattleScreen(colorDict, gameParams)
-        winScreen = WinScreen(colorDict, gameParams)
+
         
         # display the player 1's placement screen
         placementScreen.display(gameParams["player1"])
@@ -126,7 +129,7 @@ def main():
 
 
         # Display winner and handle game end or restart
-        while gameParams["restart_game"] == False:
+        while gameParams["restart_game"] == False and gameParams["game_running"]:
             winScreen.display(gameParams["winner"])
         
         # if game is not runninng, break out of the loop (which exits the program)
