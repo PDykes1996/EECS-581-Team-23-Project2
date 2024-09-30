@@ -1,9 +1,9 @@
 # EECS-581-Team-Projects
 
-## Team Members
+## Team 23 Members
 
-Ethan Dirkes,
-Chase Entwistle,
-Christopher Gronewold,
-Tommy Lam,
-Zonaid Prithu
+Paul Dykes,
+John Mosely,
+Spencer Addis,
+Aryamann Zutshi,
+Will Battey
