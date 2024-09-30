@@ -40,51 +40,43 @@ class PlacementScreen:
         player (int): The player number (1 or 2)
         """
         # Initialize empty grid and ships for placement
-        grid = [[None] * 10 for _ in range(10)] #initially 10x10 grid is empty
+        grid = [[None] * 10 for _ in range(10)]                                                                 #initially 10x10 grid is empty
         ships = [pygame.Rect(600, 100 + i * 60, (i + 1) * 50, 50) for i in range(self.gameParams["num_ships"])] #ships start off the grid
-        self.selected = None  # Currently selected ship
-        self.vertical = False  # Ship orientation (horizontal by default)
-        self.finished = False  # Flag to track when placement is complete
+        self.selected = None                                                                                    # Currently selected ship
+        self.vertical = False                                                                                   # Ship orientation (horizontal by default)
+        self.finished = False                                                                                   # Flag to track when placement is complete
 
         while not self.finished:
-            self.gameParams["screen"].fill(self.colors["WHITE"])  # Clear screen
+            self.gameParams["screen"].fill(self.colors["WHITE"])                    # Clear screen
+            self._draw_text(f"Player {player.player_id} Ship Placement", (350, 20)) # Display player instructions
+            self._draw_grid(grid)                                                   # Draw the placement grid
+            self._draw_ships(ships)                                                 # Draw the ships in the side panel
+            
 
-            # Display player instruction
-            self._draw_text(f"Player {player.player_id} Ship Placement", (350, 20))
-
-            # Draw the placement grid
-            self._draw_grid(grid)
-
-            # Draw the ships in the side panel
-            self._draw_ships(ships)
-
-            # Check if all ships are placed
-            all_ships_placed = all(ship.left < 600 for ship in ships)
-
-            # Create Rotate and Finish buttons
+            # Button Parameters
             rotateButton = Button(
                 self.colors, self.gameParams,
-                {"x": 600, 
+                {"x": 600,                                                  # Button Coordinates
                  "y": 600, 
-                 "width": 150, 
+                 "width": 150,                                              # Button Dimensions               
                  "height": 50, 
-                 "button_color": self.colors["LIGHT_GRAY"],
-                 "action": None, 
-                 "text": "Rotate (V)" if self.vertical else "Rotate (H)"}
+                 "button_color": self.colors["LIGHT_GRAY"],                 # Button Color
+                 "action": None,                                            # Action when button clicked
+                 "text": "Rotate (V)" if self.vertical else "Rotate (H)"}   # Text on the button
             )
             finishButton = Button(
                 self.colors, self.gameParams,
-                {"x": 800, 
+                {"x": 800,                                  # Button Coordinates
                  "y": 600, 
-                 "width": 150, 
+                 "width": 150,                              # Button Dimensions
                  "height": 50, 
-                 "button_color": self.colors["LIGHT_GRAY"],
-                 "action": None, 
-                 "text": "Finish"}
+                 "button_color": self.colors["LIGHT_GRAY"], # Button Color
+                 "action": None,                            # Action when button clicked
+                 "text": "Finish"}                          # Text on the button
             )
 
-            rotateButton.draw()
-            finishButton.draw()
+            rotateButton.draw() #Draw rotate button
+            finishButton.draw() #Draw finish button
 
             # Show placement indicator
             mouse_pos = pygame.mouse.get_pos()
@@ -107,14 +99,14 @@ class PlacementScreen:
 
     def _draw_grid(self, grid):
         """Helper function to draw the placement grid."""
-        for i in range(10): #looping grid to draw each cell
-            for j in range(10): #nested for loops
-                rect = pygame.Rect(50 + i * 50, 100 + j * 50, 50, 50) #creating rectangle for each position of grid
-                pygame.draw.rect(self.gameParams["screen"], self.colors["GRID_BLUE"], rect) #draw in blue background
-                pygame.draw.rect(self.gameParams["screen"], self.colors["BLACK"], rect, 1) #outline each rect in black
+        for i in range(10):     #Columns of grid
+            for j in range(10): #Rows of grid
+                rect = pygame.Rect(50 + i * 50, 100 + j * 50, 50, 50)                       #creating rectangle for each position of grid
+                pygame.draw.rect(self.gameParams["screen"], self.colors["GRID_BLUE"], rect) #draw in blue grid square background
+                pygame.draw.rect(self.gameParams["screen"], self.colors["BLACK"], rect, 1)  #outline each grid square in black
 
-                if grid[j][i] is not None: #if ship part present at this grid pos
-                    pygame.draw.rect(self.gameParams["screen"], self.colors["DARK_GRAY"], rect) #draw in dark grey to indicae ship
+                if grid[j][i] is not None:                                                      #If ship part present at this grid pos...
+                    pygame.draw.rect(self.gameParams["screen"], self.colors["DARK_GRAY"], rect) #...draw in dark grey to indicae ship
 
                 # Draw grid labels (A-J, 1-10)
                 self._draw_text(chr(65 + i), (65 + i * 50, 70))
@@ -122,28 +114,32 @@ class PlacementScreen:
 
     def _draw_ships(self, ships):
         """Helper function to draw ships in the side panel."""
-        for i, ship in enumerate(ships): #change ship grid color to gret
-            pygame.draw.rect(self.gameParams["screen"], self.colors["DARK_GRAY"], ship) #changing color
-            if i == self.selected: #if ship is currently slected ship, outline it with red border
-                pygame.draw.rect(self.gameParams["screen"], self.colors["RED"], ship, 2) #red border
+        for i, ship in enumerate(ships):                                               #For each ship...
+            pygame.draw.rect(self.gameParams["screen"], self.colors["DARK_GRAY"], ship)#...Change the color of it's grid square to dark grey
+
+            if i == self.selected:                                                      #If ship is currently selected...
+                pygame.draw.rect(self.gameParams["screen"], self.colors["RED"], ship, 2)#...draw a red outline around it
 
     def _draw_placement_indicator(self, ship, mouse_pos, vertical):
         """Draw a placement indicator for the selected ship."""
         size = max(ship.width, ship.height) // 50 #ship size being determined in grid cells
-        if vertical: #checking vertical
-            indicator = pygame.Rect(mouse_pos[0] - 25, mouse_pos[1] - 25, 50, size * 50) #centering rectangle around the mouse position
-        else:
-            indicator = pygame.Rect(mouse_pos[0] - 25, mouse_pos[1] - 25, size * 50, 50) #if ship is horizontal
-        pygame.draw.rect(self.gameParams["screen"], self.colors["RED"], indicator, 2) #centering around mouse pos using the math shown
+        if vertical:                                                                        #If ship is vertical...
+            indicator = pygame.Rect(mouse_pos[0] - 25, mouse_pos[1] - 25, 50, size * 50)    #...draw a vertical ship indicator around mouse pos
+
+        else:                                                                               #If ship is horizontal...
+            indicator = pygame.Rect(mouse_pos[0] - 25, mouse_pos[1] - 25, size * 50, 50)    #...draw a horizontal ship indicator around mouse pos
+
+        pygame.draw.rect(self.gameParams["screen"], self.colors["RED"], indicator, 2)       #Draw a red outline around currently selected ship
 
     def _toggle_orientation(self):
         """Toggle ship orientation."""
-        self.vertical = not self.vertical #we only use vertical as param, set to not vertical if toggled
+        self.vertical = not self.vertical #Togggle between veritcal and not vertical (horizontal)
 
-    def _finish_placement(self, all_ships_placed):
+    def _finish_placement(self, ships):
         """Finish ship placement if all ships are placed."""
-        if all_ships_placed: #checking all ships placed
-            self.finished = True #set finished method to true, allows for game to start
+        all_ships_placed = all(ship.left < 600 for ship in ships)#Return True if all ships are placed on the grid
+        if all_ships_placed:     #If all ships placed...
+            self.finished = True #...set finished parameter to true, allows for game to start
 
     def _handle_events(self, ships, grid):
         """Handle user input events."""
@@ -173,7 +169,7 @@ class PlacementScreen:
             self._toggle_orientation() #switch the orientation from vertical to horizontal or other way around
             return  # Exit early since we've handled the click
         elif finishButtonRect.collidepoint(mouse_pos) and all_ships_placed: #if finish button clicked
-            self._finish_placement(all_ships_placed) #finalize placement
+            self._finish_placement(ships) #finalize placement
             return  # Exit early since we've handled the click
 
         x, y = (mouse_pos[0] - 50) // 50, (mouse_pos[1] - 100) // 50 #figuring out grid coordinate mouse is on
