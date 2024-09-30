@@ -55,11 +55,11 @@ colorDict = {
     "GRID_BLUE" : (10, 150, 210),
 }
 #Initialize other screens with new game parameters
-startScreen = StartScreen(gameParams, colorDict)
-placementScreen = PlacementScreen(colorDict, gameParams)
-passScreen = PassScreen(colorDict, gameParams)
-battleScreen = BattleScreen(colorDict, gameParams)
-winScreen = WinScreen(colorDict, gameParams)
+startScreen = StartScreen(gameParams, colorDict)        #Start screen to select number of ships, game mode, and AI difficulty
+placementScreen = PlacementScreen(colorDict, gameParams)#Placement screen to place ships
+passScreen = PassScreen(colorDict, gameParams)          #Pass screen to switch turns
+battleScreen = BattleScreen(colorDict, gameParams)      #Battle screen to display the game board
+winScreen = WinScreen(colorDict, gameParams)            #Win screen to display the winner and options to restart or end the game
 
 
 def main():
@@ -79,63 +79,54 @@ def main():
         # reinitialize all game parameter variables when user wants to start a new game
         if gameParams["restart_game"]:
             # Reset all game variables for a new game
-            gameParams["winner"] = None
-            gameParams["num_ships"] = 0
-            gameParams["player1"].ships = []  # Reset to an empty list, not None
-            gameParams["player2"].ships = []  # Same for player2
+            gameParams["winner"] = None # Reset winner
+            gameParams["num_ships"] = 0 # Reset number of ships
+            #Reset ship lists and hits grids to empty lists
+            gameParams["player1"].ships = []
+            gameParams["player2"].ships = []  
             gameParams["player1"].sunk_ships = []
             gameParams["player2"].sunk_ships = []
             gameParams["player1"].hits = [[None for _ in range(10)] for _ in range(10)]  # Reset the hits grid
             gameParams["player2"].hits = [[None for _ in range(10)] for _ in range(10)]  # Same for player2
+
+            gameParams["player1"].special_used = False # Enable special ability P1
+            gameParams["player2"].special_used = False # Enable special ability P2
             gameParams["restart_game"] = False
             continue
-        
-        # Start screen to select number of ships
 
-        startScreen.display()
+        startScreen.display() # Start screen to select number of ships
 
+        placementScreen.display(gameParams["player1"])                                      # display player 1's placement screen...
+        if not gameParams["player2"].isAI: placementScreen.display(gameParams["player2"])   #...if player2 is a user, show their placement screen...
+        else: gameParams["player2"].place_AI_ships(gameParams["num_ships"])                 #...otherwise, place AI ships
 
-        
-        # display the player 1's placement screen
-        placementScreen.display(gameParams["player1"])
-        #If player2 is a user, show their placement screen
-        if not gameParams["player2"].isAI: placementScreen.display(gameParams["player2"])
-        else: gameParams["player2"].place_AI_ships(gameParams["num_ships"])
-
-        # execute the following loop until there is a winner
-        while gameParams["winner"] == None:
+        # Game Loop
+        while gameParams["winner"] == None:             # While there is no winner...
             # Player 1's turn
-            battleScreen.display(gameParams["player1"])
-            # if there is a winner, break out of the loop
-            if gameParams["winner"]:
-                break
+            battleScreen.display(gameParams["player1"]) #...display player 1's board
+            if gameParams["winner"]:                    #...If player 1 wins...
+                break                                   #...end the loop
 
-            # if player 2 is an AI, have the AI fire and return a winner (if there is one)
-            if gameParams["player2"].isAI:
-                winner = gameParams["player2"].fire(gameParams["player1"])
-                if winner: gameParams["winner"] = winner
+            # Player 2 (AI) Turn Loop
+            if gameParams["player2"].isAI:                                  #If player 2 is an AI...
+                winner = gameParams["player2"].fire(gameParams["player1"])  #...have the AI fire at player 1...
+                if winner: gameParams["winner"] = winner                    #... and if player 2 wins, set them as the winner
 
-            # if player 2 is user, pass the screen to player 2, then display their board
+            # Player 2 (Human) Turn Loop
             else:
-                passScreen.display(gameParams["player2"])
+                passScreen.display(gameParams["player2"])   #Display the pass screen for player 2...
 
-                # Player 2's turn
-                battleScreen.display(gameParams["player2"])
-                # if there is a winner, break out of the loop
-                if gameParams["winner"]:
-                    break
-
-                # otherwise pass the screen back to player 1
-                passScreen.display(gameParams["player1"])
+                battleScreen.display(gameParams["player2"]) #...display player 2's board
+                if gameParams["winner"]:                    #...If player 2 wins...
+                    break                                   #...end the loop
+                passScreen.display(gameParams["player1"])   #...Otherwise, pass the turn back to player 1
 
 
-        # Display winner and handle game end or restart
-        while gameParams["restart_game"] == False and gameParams["game_running"]:
-            winScreen.display(gameParams["winner"])
+        while gameParams["restart_game"] == False and gameParams["game_running"]: #While the game is running and hasn't been restarted...
+            winScreen.display(gameParams["winner"])                               #...display the win screen until player chooses to restart or end the game
         
-        # if game is not runninng, break out of the loop (which exits the program)
-        if not gameParams["game_running"]:
-            break
+        if not gameParams["game_running"]: #If the game has ended and not been restarted...
+            break                          #...end the game loop
 
 if __name__ == "__main__":
     main()
