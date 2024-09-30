@@ -40,8 +40,8 @@ class PlacementScreen:
         player (int): The player number (1 or 2)
         """
         # Initialize empty grid and ships for placement
-        grid = [[None] * 10 for _ in range(10)]
-        ships = [pygame.Rect(600, 100 + i * 60, (i + 1) * 50, 50) for i in range(self.gameParams["num_ships"])]
+        grid = [[None] * 10 for _ in range(10)] #initially 10x10 grid is empty
+        ships = [pygame.Rect(600, 100 + i * 60, (i + 1) * 50, 50) for i in range(self.gameParams["num_ships"])] #ships start off the grid
         self.selected = None  # Currently selected ship
         self.vertical = False  # Ship orientation (horizontal by default)
         self.finished = False  # Flag to track when placement is complete
@@ -107,14 +107,14 @@ class PlacementScreen:
 
     def _draw_grid(self, grid):
         """Helper function to draw the placement grid."""
-        for i in range(10):
-            for j in range(10):
-                rect = pygame.Rect(50 + i * 50, 100 + j * 50, 50, 50)
-                pygame.draw.rect(self.gameParams["screen"], self.colors["GRID_BLUE"], rect)
-                pygame.draw.rect(self.gameParams["screen"], self.colors["BLACK"], rect, 1)
+        for i in range(10): #looping grid to draw each cell
+            for j in range(10): #nested for loops
+                rect = pygame.Rect(50 + i * 50, 100 + j * 50, 50, 50) #creating rectangle for each position of grid
+                pygame.draw.rect(self.gameParams["screen"], self.colors["GRID_BLUE"], rect) #draw in blue background
+                pygame.draw.rect(self.gameParams["screen"], self.colors["BLACK"], rect, 1) #outline each rect in black
 
-                if grid[j][i] is not None:
-                    pygame.draw.rect(self.gameParams["screen"], self.colors["DARK_GRAY"], rect)
+                if grid[j][i] is not None: #if ship part present at this grid pos
+                    pygame.draw.rect(self.gameParams["screen"], self.colors["DARK_GRAY"], rect) #draw in dark grey to indicae ship
 
                 # Draw grid labels (A-J, 1-10)
                 self._draw_text(chr(65 + i), (65 + i * 50, 70))
@@ -122,65 +122,65 @@ class PlacementScreen:
 
     def _draw_ships(self, ships):
         """Helper function to draw ships in the side panel."""
-        for i, ship in enumerate(ships):
-            pygame.draw.rect(self.gameParams["screen"], self.colors["DARK_GRAY"], ship)
-            if i == self.selected:
-                pygame.draw.rect(self.gameParams["screen"], self.colors["RED"], ship, 2)
+        for i, ship in enumerate(ships): #change ship grid color to gret
+            pygame.draw.rect(self.gameParams["screen"], self.colors["DARK_GRAY"], ship) #changing color
+            if i == self.selected: #if ship is currently slected ship, outline it with red border
+                pygame.draw.rect(self.gameParams["screen"], self.colors["RED"], ship, 2) #red border
 
     def _draw_placement_indicator(self, ship, mouse_pos, vertical):
         """Draw a placement indicator for the selected ship."""
-        size = max(ship.width, ship.height) // 50
-        if vertical:
-            indicator = pygame.Rect(mouse_pos[0] - 25, mouse_pos[1] - 25, 50, size * 50)
+        size = max(ship.width, ship.height) // 50 #ship size being determined in grid cells
+        if vertical: #checking vertical
+            indicator = pygame.Rect(mouse_pos[0] - 25, mouse_pos[1] - 25, 50, size * 50) #centering rectangle around the mouse position
         else:
-            indicator = pygame.Rect(mouse_pos[0] - 25, mouse_pos[1] - 25, size * 50, 50)
-        pygame.draw.rect(self.gameParams["screen"], self.colors["RED"], indicator, 2)
+            indicator = pygame.Rect(mouse_pos[0] - 25, mouse_pos[1] - 25, size * 50, 50) #if ship is horizontal
+        pygame.draw.rect(self.gameParams["screen"], self.colors["RED"], indicator, 2) #centering around mouse pos using the math shown
 
     def _toggle_orientation(self):
         """Toggle ship orientation."""
-        self.vertical = not self.vertical
+        self.vertical = not self.vertical #we only use vertical as param, set to not vertical if toggled
 
     def _finish_placement(self, all_ships_placed):
         """Finish ship placement if all ships are placed."""
-        if all_ships_placed:
-            self.finished = True
+        if all_ships_placed: #checking all ships placed
+            self.finished = True #set finished method to true, allows for game to start
 
     def _handle_events(self, ships, grid):
         """Handle user input events."""
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_h:
-                    self.vertical = False
-                elif event.key == pygame.K_v:
-                    self.vertical = True
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                self._handle_mouse_click(event, ships, grid)
+        for event in pygame.event.get(): #loop through all the events tha can occur
+            if event.type == pygame.QUIT: #if close button clicked
+                pygame.quit() #quit the game
+                sys.exit() #exit
+            if event.type == pygame.KEYDOWN: #h key allows for horizontal placement
+                if event.key == pygame.K_h: #if h clicked
+                    self.vertical = False #vertical will change to false
+                elif event.key == pygame.K_v: #same logic but for other key
+                    self.vertical = True #using true not changing it to if v clicked make horizontal false, easier implementation
+            if event.type == pygame.MOUSEBUTTONDOWN: #pass to mouse handler
+                self._handle_mouse_click(event, ships, grid) #processing ship placement here
 
     def _handle_mouse_click(self, event, ships, grid):
         """Handle mouse clicks for ship placement and selection."""
-        mouse_pos = event.pos
+        mouse_pos = event.pos #get current mouse position
 
         # Handle button clicks for rotate and finish
-        rotateButtonRect = pygame.Rect(600, 600, 150, 50)
-        finishButtonRect = pygame.Rect(800, 600, 150, 50)
+        rotateButtonRect = pygame.Rect(600, 600, 150, 50) #button to rotate
+        finishButtonRect = pygame.Rect(800, 600, 150, 50) #button to finalize placement
 
-        all_ships_placed = all(ship.left < 600 for ship in ships)
+        all_ships_placed = all(ship.left < 600 for ship in ships) #ensuring number of ships selected have all been placed
 
-        if rotateButtonRect.collidepoint(mouse_pos):
-            self._toggle_orientation()
+        if rotateButtonRect.collidepoint(mouse_pos): #if mouse click on rotate button
+            self._toggle_orientation() #switch the orientation from vertical to horizontal or other way around
             return  # Exit early since we've handled the click
-        elif finishButtonRect.collidepoint(mouse_pos) and all_ships_placed:
-            self._finish_placement(all_ships_placed)
+        elif finishButtonRect.collidepoint(mouse_pos) and all_ships_placed: #if finish button clicked
+            self._finish_placement(all_ships_placed) #finalize placement
             return  # Exit early since we've handled the click
 
-        x, y = (mouse_pos[0] - 50) // 50, (mouse_pos[1] - 100) // 50
-        if 0 <= x < 10 and 0 <= y < 10:
-            if self.selected is not None:
-                size = max(ships[self.selected].width, ships[self.selected].height) // 50
-                if self.is_valid_placement(x, y, size, self.vertical, self.selected + 1, grid):
+        x, y = (mouse_pos[0] - 50) // 50, (mouse_pos[1] - 100) // 50 #figuring out grid coordinate mouse is on
+        if 0 <= x < 10 and 0 <= y < 10: #click has to be within bounds
+            if self.selected is not None: #if there is a ship currently selected
+                size = max(ships[self.selected].width, ships[self.selected].height) // 50 #figure out the size of the ship, whichever is greater between width or height
+                if self.is_valid_placement(x, y, size, self.vertical, self.selected + 1, grid): #if all parameters line up for valud placement
                     self.clear_ship(self.selected + 1, grid)  # Clear old position of the ship
 
                     # Place the ship on the grid based on orientation
@@ -193,8 +193,8 @@ class PlacementScreen:
                     # Update ship position in the 'ships' list with correct orientation
                     ships[self.selected] = pygame.Rect(
                         50 + x * 50, 100 + y * 50,
-                        50 if self.vertical else size * 50,
-                        size * 50 if self.vertical else 50
+                        50 if self.vertical else size * 50, #adjust width based on orientation of page
+                        size * 50 if self.vertical else 50 #same for height
                     )
                     self.selected = None  # Deselect the ship after placing it
 
@@ -202,45 +202,48 @@ class PlacementScreen:
                 # Clicking on the grid without a selected ship does nothing
                 pass
         else:
-            # Select a ship from the side panel
-            for i, ship in enumerate(ships):
-                if ship.collidepoint(mouse_pos):
-                    self.selected = i
-                    self.clear_ship(i + 1, grid)
+            # Select a ship from the side panel, checking because this is a button click outside of the grid
+            for i, ship in enumerate(ships): #if mouse click inside a rectangle of side panel ship
+                if ship.collidepoint(mouse_pos): #select the ship being selected
+                    self.selected = i #store it
+                    self.clear_ship(i + 1, grid) #clear previous placement of that ship if there was one
                     break
 
     def clear_ship(self, ship_num, grid):
         """Remove a ship from the grid."""
-        for y in range(10):
-            for x in range(10):
-                if grid[y][x] == ship_num:
-                    grid[y][x] = None
+        for y in range(10): #nested for loops for location
+            for x in range(10): #now for x coordinate
+                if grid[y][x] == ship_num: #if the ship wanting ot be cleared overlaps this coordinate
+                    grid[y][x] = None #set it to None
 
     def is_valid_placement(self, x, y, size, is_vertical, ship_num, grid):
         """Check if a ship placement is valid."""
         # Check if ship is within grid bounds
-        if is_vertical and y + size > 10:
-            return False
-        if not is_vertical and x + size > 10:
+        if is_vertical and y + size > 10: #limit is 10x10 grid
+            return False #can't do it
+        if not is_vertical and x + size > 10: #same thing for other axis
             return False
 
         # Check for overlap with other ships
-        for i in range(size):
-            check_x = x + (0 if is_vertical else i)
-            check_y = y + (i if is_vertical else 0)
+        for i in range(size): #using for loop to iterate through every cell in ship (its size)
+            check_x = x + (0 if is_vertical else i) #we are trying ot figire out x coordinate,
+            check_y = y + (i if is_vertical else 0) #figuring out y coordinate
 
-            if grid[check_y][check_x] is not None and grid[check_y][check_x] != ship_num:
+            if grid[check_y][check_x] is not None and grid[check_y][check_x] != ship_num: #here we check if another ship is overlapping the square occupied by existing ship
                 return False
 
-        return True
+        return True #if passes without returning false, return true, allow placement
 
     def _store_ships(self, player, grid):
         """Store the placed ships in the game parameters."""
-        if player == 1:
+        if player == 1: #check if player 1 is player 1
+            #storing ships for player 1 in game params dict using key 'player1'
             self.gameParams["player1"].ships = [
+                #storing set of all the coordinates where ships are placed
                 {'coords': set((y, x) for y in range(10) for x in range(10) if grid[y][x] == i + 1), 'size': i + 1} for i in range(self.gameParams["num_ships"])
             ]
         else:
+            #same stuff as above but for player 2
             self.gameParams["player2"].ships = [
                 {'coords': set((y, x) for y in range(10) for x in range(10) if grid[y][x] == i + 1), 'size': i + 1} for i in range(self.gameParams["num_ships"])
             ]       
