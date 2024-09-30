@@ -40,35 +40,23 @@ class Player:
         return player.ships != [] and all(self.check_ship_sunk(player, ship) for ship in player.ships)
     
     def place_AI_ships(self, num_ships):
-        ship_sizes = list(range(1, num_ships + 1))
-        placed_ships = []
-
-
-        for length in ship_sizes:
-            valid_position = False
-
-            # Try placing the ship until a valid position is found
-            while not valid_position:
-                horizontal = random.choice([True, False])  # Randomly choose orientation
+        for length in range(1, num_ships + 1):
+            placed = False
+            while not placed:
+                horizontal = random.choice([True, False])
                 if horizontal:
-                    x = random.randint(0, 10 - length)  # Ensure ship fits horizontally
-                    y = random.randint(0, 9)            # Vertical position
+                    x = random.randint(0, 10 - length)  # Ensure the ship fits horizontally
+                    y = random.randint(0, 9)
+                    new_ship_coords = set((x + i, y) for i in range(length))
                 else:
-                    x = random.randint(0, 9)            # Horizontal position
-                    y = random.randint(0, 10 - length)  # Ensure ship fits vertically
+                    x = random.randint(0, 9)
+                    y = random.randint(0, 10 - length)  # Ensure the ship fits vertically
+                    new_ship_coords = set((x, y + i) for i in range(length))
 
-                # Generate ship coordinates based on orientation
-                if horizontal:
-                    new_ship_coords = {(y, i) for i in range(x, x + length)}
-                else:
-                    new_ship_coords = {(i, x) for i in range(y, y + length)}
-
-                # Check if the new ship overlaps with any previously placed ship
+                # Check if the ship overlaps with any existing ships
                 if not any(coord in placed_ship['coords'] for placed_ship in self.ships for coord in new_ship_coords):
-                    # No overlap found, so place the ship
                     self.ships.append({'coords': new_ship_coords, 'size': length})
-                    placed_ships.append({'coords': new_ship_coords, 'size': length})
-                    valid_position = True
+                    placed = True
 
     def level_one(self, player):
         x = random.randint(0, 9)

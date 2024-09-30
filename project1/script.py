@@ -79,13 +79,14 @@ def main():
         # reinitialize all game parameter variables when user wants to start a new game
         if gameParams["restart_game"]:
             # Reset all game variables for a new game
+            gameParams["winner"] = None
             gameParams["num_ships"] = 0
-            gameParams["player1"].ships = None
-            gameParams["player2"].ships = None
+            gameParams["player1"].ships = []  # Reset to an empty list, not None
+            gameParams["player2"].ships = []  # Same for player2
             gameParams["player1"].sunk_ships = []
             gameParams["player2"].sunk_ships = []
-            gameParams["player1"].hits = None
-            gameParams["player2"].hits = None
+            gameParams["player1"].hits = [[None for _ in range(10)] for _ in range(10)]  # Reset the hits grid
+            gameParams["player2"].hits = [[None for _ in range(10)] for _ in range(10)]  # Same for player2
             gameParams["restart_game"] = False
             continue
         
