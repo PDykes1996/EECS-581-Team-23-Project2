@@ -40,21 +40,35 @@ class Player:
         return player.ships != [] and all(self.check_ship_sunk(player, ship) for ship in player.ships)
     
     def place_AI_ships(self, num_ships):
-        for length in range(1, num_ships + 1):
-            # randomly generate a position for a ship
-            horizontal = random.choice([True, False])
-            if horizontal:
-                x = random.randint(0, 10 - length)
-                y = random.randint(0, 9)
-            else:
-                x = random.randint(0, 9)
-                y = random.randint(0, 10 - length)
+        ship_sizes = list(range(1, num_ships + 1))
+        placed_ships = []
 
-            for i in range(length):
+
+        for length in ship_sizes:
+            valid_position = False
+
+            # Try placing the ship until a valid position is found
+            while not valid_position:
+                horizontal = random.choice([True, False])  # Randomly choose orientation
                 if horizontal:
-                    self.ships.append({'coords': set((i, y) for i in range(x, x + length - 1)), 'size': length})
+                    x = random.randint(0, 10 - length)  # Ensure ship fits horizontally
+                    y = random.randint(0, 9)            # Vertical position
                 else:
-                    self.ships.append({'coords': set((y, j) for j in range(y, y + length)), 'size': length})
+                    x = random.randint(0, 9)            # Horizontal position
+                    y = random.randint(0, 10 - length)  # Ensure ship fits vertically
+
+                # Generate ship coordinates based on orientation
+                if horizontal:
+                    new_ship_coords = {(y, i) for i in range(x, x + length)}
+                else:
+                    new_ship_coords = {(i, x) for i in range(y, y + length)}
+
+                # Check if the new ship overlaps with any previously placed ship
+                if not any(coord in placed_ship['coords'] for placed_ship in self.ships for coord in new_ship_coords):
+                    # No overlap found, so place the ship
+                    self.ships.append({'coords': new_ship_coords, 'size': length})
+                    placed_ships.append({'coords': new_ship_coords, 'size': length})
+                    valid_position = True
 
     def level_one(self, player):
         x = random.randint(0, 9)
@@ -79,7 +93,7 @@ class Player:
 
 
     def level_two(self, player):
-        # if ai has not hit ship recently, behave like level_one
+        # if AI has not hit a ship recently, behave like level_one
         if not self.first_hit:
             result = self.level_one(player)
             if result[2] == 'S':
@@ -95,79 +109,78 @@ class Player:
         if not self.previous_hit:
             self.previous_hit = self.first_hit
 
-        # if ai is firing horizontally
-        if self.horizontal:
-            if self.previous_hit[0] <= 0:
-                self.fire_before = False
-                self.level_two(player)
+        while True:
+            # If firing horizontally
+            if self.horizontal:
+                # If at the edge of the grid, switch direction
+                if self.previous_hit[0] <= 0:
+                    self.fire_before = False
+
+                # If firing to the left
+                if self.fire_before and self.previous_hit[0] > 0 and player.hits[self.previous_hit[1]][self.previous_hit[0] - 1] is None:
+                    x, y = self.previous_hit[0] - 1, self.previous_hit[1]
+                # Otherwise, fire to the right
+                elif self.previous_hit[0] < 9 and player.hits[self.previous_hit[1]][self.previous_hit[0] + 1] is None:
+                    x, y = self.previous_hit[0] + 1, self.previous_hit[1]
+                else:
+                    # Switch to vertical if both horizontal directions are exhausted
+                    self.horizontal = False
+                    continue
+
+            # If firing vertically
+            else:
+                # If at the edge of the grid, switch direction
+                if self.previous_hit[1] <= 0:
+                    self.fire_before = False
+
+                # If firing above
+                if self.fire_before and self.previous_hit[1] > 0 and player.hits[self.previous_hit[1] - 1][self.previous_hit[0]] is None:
+                    x, y = self.previous_hit[0], self.previous_hit[1] - 1
+                # Otherwise, fire below
+                elif self.previous_hit[1] < 9 and player.hits[self.previous_hit[1] + 1][self.previous_hit[0]] is None:
+                    x, y = self.previous_hit[0], self.previous_hit[1] + 1
+                else:
+                    # Reset AI state if all directions are exhausted
+                    self.first_hit = None
+                    self.previous_hit = None
+                    self.fire_before = True
+                    self.horizontal = True
+                    self.recent_hits = 0
+                    return
+
+            # Get the ship at the coordinates
+            ship = self.get_ship(player, x, y)
+
+            # If there is a ship at the coordinates
+            if ship:
+                self.previous_hit = (x, y)  # Update previous_hit
+                player.hits[y][x] = 'H'  # Mark as hit on the player's board
+
+                # If the ship was sunk
+                if self.check_ship_sunk(player, ship):
+                    self.first_hit = None  # Reset first_hit
+                    self.previous_hit = None
+                    player.sunk_ships.append(ship['coords'])  # Append the sunk ship to the player's sunk_ships
                 return
 
-            # if firing to the left
-            print(self.fire_before, player.hits[self.previous_hit[1]][self.previous_hit[0] - 1])
-            if self.fire_before and player.hits[self.previous_hit[1]][self.previous_hit[0] - 1] == None:
-                # decrement x coordinate by 1 from previous x coordinate
-                x, y = self.previous_hit[0] - 1, self.previous_hit[1]
-            # otherwise increment x coordinate by 1 from previous x coordinate
-            elif self.previous_hit[0] < 9 and player.hits[self.previous_hit[1]][self.previous_hit[0] + 1] == None:
-                x, y = self.previous_hit[0] + 1, self.previous_hit[1]
-
-
-        # if ai is firing vertically
-        else:
-            if self.previous_hit[1] <= 0:
-                self.fire_before = False
-                self.level_two(player)
-
-            # if firing above, decrement y coordinate by 1 from previous x coordinate
-            if self.fire_before and self.previous_hit[1] > 0 and player.hits[self.previous_hit[1] - 1][self.previous_hit[0]] == None:
-                x, y = self.previous_hit[0], self.previous_hit[1] - 1
-            # otherwise increment y coordinate by 1 from previous x coordinate
-            elif self.previous_hit[1] < 9 and player.hits[self.previous_hit[1] + 1][self.previous_hit[0]] == None:
-                x, y = self.previous_hit[0], self.previous_hit[1] + 1
-
-        # get the ship at the coordinates
-        ship = self.get_ship(player, x, y)
-
-        # if there is a ship at the coordinates
-        if ship:
-            self.previous_hit = (x, y)                      # update previous_hit
-            player.hits[y][x] = 'H'                         # Mark as hit on player board
-
-            # if ship was sunk
-            if self.check_ship_sunk(player, ship):
-                self.first_hit = None                       # reset first_hit to None
-                self.previous_hit = None
-                player.sunk_ships.append(ship['coords'])    # append the sunk ship to the player's sunk_ships
-
-        # if there is no ship at coordinates
-        elif self.horizontal:
-            if self.fire_before:   # if firing horizontally and firing to the left
-                self.fire_before = False    # start firing to the right
-            
-            # if firing horizontally and firing to the right
+            # If there is no ship at the coordinates
             else:
-                self.fire_before = True    # reset fire_before
-                self.horizontal = False
-                if self.recent_hits == 0:
-                    self.first_hit = None
-                    self.previous_hit = None
-                    self.fire_before = True
-                    self.horizontal = True
-                    self.recent_hits = 0
-                
-            self.previous_hit = self.first_hit  # set previous hit to the first hit
-            self.hits[y][x] = 'M'  # Mark as miss
+                player.hits[y][x] = 'M'  # Mark as miss
 
-        elif self.fire_before:   # if firing horizontally and firing to the left
-            self.fire_before = False    # start firing to the right 
-            self.previous_hit = self.first_hit  # set previous hit to the first hit
-            self.hits[y][x] = 'M'  # Mark as miss
-            if self.recent_hits:
+                # If firing horizontally and hit a miss
+                if self.horizontal:
+                    if self.fire_before:  # If firing left, switch to firing right
+                        self.fire_before = False
+                    else:  # If firing right, switch to vertical
+                        self.horizontal = False
+                else:
+                    # If vertical direction was exhausted, reset the AI's firing pattern
                     self.first_hit = None
                     self.previous_hit = None
                     self.fire_before = True
                     self.horizontal = True
                     self.recent_hits = 0
+                return
 
 
     def level_three(self, player):
