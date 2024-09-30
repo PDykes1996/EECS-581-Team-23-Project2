@@ -43,6 +43,7 @@ class Button:
         self.enabled = enabled
         self.buttonParams = buttonParams
         self.button_clicked = False
+        self.rect = None
 
     def draw(self):
         """
@@ -80,7 +81,7 @@ class Button:
         # Check if the mouse is over the button
         if self.enabled and self.rect.collidepoint(mouse):
             # Change button color on hover
-            pygame.draw.rect(self.gameParams["screen"], self.colors["LIGHT_BLUE"], (x, y, width, height))
+            pygame.draw.rect(self.gameParams["screen"], self.colors["LIGHT_BLUE"], self.rect)
             if click[0] == 1 and not self.button_clicked:
                 self.button_clicked = True
                 if action:
@@ -88,7 +89,7 @@ class Button:
             elif click[0] == 0:
                 self.button_clicked = False
         else:
-            pygame.draw.rect(self.gameParams["screen"], button_color, (x, y, width, height))
+            pygame.draw.rect(self.gameParams["screen"], button_color, self.rect)
 
         # Render button text
         text_color = self.colors["BLACK"] if self.enabled else self.colors["LIGHT_GRAY"]
