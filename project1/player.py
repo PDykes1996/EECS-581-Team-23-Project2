@@ -40,62 +40,63 @@ class Player:
         return player.ships != [] and all(self.check_ship_sunk(player, ship) for ship in player.ships)
     
     def place_AI_ships(self, num_ships):
-        for length in range(1, num_ships + 1):
-            placed = False
-            while not placed:
-                horizontal = random.choice([True, False])
-                if horizontal:
+        for length in range(1, num_ships + 1): #looping thorugh num of ships
+            placed = False #flag indicating if current ship has been placed or not
+            while not placed: #while loop
+                horizontal = random.choice([True, False]) #ai will randomize orientation
+                if horizontal: #if horizontal chosen, need to ensure it fits where random location is
                     x = random.randint(0, 10 - length)  # Ensure the ship fits horizontally
-                    y = random.randint(0, 9)
-                    new_ship_coords = set((x + i, y) for i in range(length))
+                    y = random.randint(0, 9) #same as above line
+                    new_ship_coords = set((x + i, y) for i in range(length)) #moving onto generating coords for next ship
                 else:
-                    x = random.randint(0, 9)
+                    x = random.randint(0, 9) #same but for vertical not
                     y = random.randint(0, 10 - length)  # Ensure the ship fits vertically
-                    new_ship_coords = set((x, y + i) for i in range(length))
+                    new_ship_coords = set((x, y + i) for i in range(length)) #new ship generated with coords
 
                 # Check if the ship overlaps with any existing ships
-                if not any(coord in placed_ship['coords'] for placed_ship in self.ships for coord in new_ship_coords):
-                    self.ships.append({'coords': new_ship_coords, 'size': length})
-                    placed = True
+                if not any(coord in placed_ship['coords'] for placed_ship in self.ships for coord in new_ship_coords): #if no overlap, add new_ship to list of exising ship coords
+                    self.ships.append({'coords': new_ship_coords, 'size': length}) #append it
+                    placed = True #flag true for valid placement
 
     def level_one(self, player):
-        x = random.randint(0, 9)
-        y = random.randint(0, 9)
+        #randomizing shots with basic functionality
+        x = random.randint(0, 9) #random legal coordinate
+        y = random.randint(0, 9) #random legal coordinate
 
-        while player.hits[y][x] != None:
-            x = random.randint(0, 9)
-            y = random.randint(0, 9)
+        while player.hits[y][x] != None: #while a selection to shoot at is made by the other player and sent
+            x = random.randint(0, 9) #keep generating
+            y = random.randint(0, 9) #keep generating
 
-        ship = self.get_ship(player, x, y)
-        if ship:
+        ship = self.get_ship(player, x, y) #get ship func retrieval to reference against
+        if ship: #if ship found
             player.hits[y][x] = 'H'  # Mark as hit
-            if self.check_ship_sunk(player, ship):
-                player.sunk_ships.append(ship['coords'])
-                return (x, y, 'S')
+            if self.check_ship_sunk(player, ship): #running check sunk func
+                player.sunk_ships.append(ship['coords']) #add to dict list of sunk to display ship sunk
+                return (x, y, 'S') #returning coordinate with sunk paramter attached
             else:
-                return (x, y, 'H')
+                return (x, y, 'H') #if only hit not sunk, make it H param
 
         else:
             player.hits[y][x] = 'M'  # Mark as miss
-            return (x, y, 'M')
+            return (x, y, 'M') #retirn M param w coords
 
 
     def level_two(self, player):
         # if AI has not hit a ship recently, behave like level_one
-        if not self.first_hit:
-            result = self.level_one(player)
-            if result[2] == 'S':
-                self.first_hit = None
-                self.previous_hit = None
-                self.recent_hits += 1
-            elif result[2] == 'H':
-                self.first_hit = (result[0], result[1])
-                self.recent_hits += 1
+        if not self.first_hit: #no hit detected
+            result = self.level_one(player) #level one play
+            if result[2] == 'S': #if sunk, reset ai tracking alg
+                self.first_hit = None #rest
+                self.previous_hit = None #rest
+                self.recent_hits += 1 #increment
+            elif result[2] == 'H': #if only hit
+                self.first_hit = (result[0], result[1]) #storing x, y coords x is 0 y is 1
+                self.recent_hits += 1 #increment
             return
 
         # if previous hit has not been set, but first hit has been set, set previous hit to first hit
-        if not self.previous_hit:
-            self.previous_hit = self.first_hit
+        if not self.previous_hit: #if hit made but no previous hit set
+            self.previous_hit = self.first_hit #linked list functionality, set previous hit to first hit
 
         while True:
             # If firing horizontally
@@ -172,19 +173,20 @@ class Player:
 
 
     def level_three(self, player):
-        found_ship = False
-        for ship in player.ships:
-            if not self.check_ship_sunk(player, ship):
-                found_ship = True
-                for i, j in ship["coords"]:
-                    if player.hits[i][j] is None:
-                        y = i
-                        x = j
-                        ship = self.get_ship(player, x, y)
-                        if ship:
+        #hardest level, you will lose unless you somehow hit ten straight shots
+        found_ship = False #initializing flag for if ai found ship
+        for ship in player.ships: #going through list of tuples of known coordinates for player1 placed ships
+            if not self.check_ship_sunk(player, ship): #if ship hasnt been sunk
+                found_ship = True #ships still alive, but its been found
+                for i, j in ship["coords"]: #iterating over current ship coords
+                    if player.hits[i][j] is None: #seting x, y vals to current coords
+                        y = i #here
+                        x = j #and here
+                        ship = self.get_ship(player, x, y) #using ship.get_ship method to find ships
+                        if ship: #if coords is a ship
                             player.hits[y][x] = 'H'  # Mark as hit
-                            if self.check_ship_sunk(player, ship):
-                                player.sunk_ships.append(ship['coords'])
+                            if self.check_ship_sunk(player, ship): #if check sunk method comes back sunk
+                                player.sunk_ships.append(ship['coords']) #add these coordinates to sunk ship list
 
                         else:
                             player.hits[y][x] = 'M'  # Mark as miss
@@ -194,13 +196,13 @@ class Player:
 
 
     def fire(self, player):
-        if self.difficulty == "Easy":
-            self.level_one(player)
+        if self.difficulty == "Easy": #choosing difficult mode
+            self.level_one(player) #func level_one, this is the AI player, non AI players cannot have a difficulty
 
-        if self.difficulty == "Medium":
+        if self.difficulty == "Medium": #same as above medium level
             self.level_two(player)
 
-        if self.difficulty == "Hard":
+        if self.difficulty == "Hard": #same as above hard level
             self.level_three(player)
 
         if self.all_ships_sunk(player):
