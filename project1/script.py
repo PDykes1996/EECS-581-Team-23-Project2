@@ -94,14 +94,14 @@ def main():
     Main game loop that controls the flow of the game.
     """
 
-    # loop that executes while game is running
-    while gameParams["game_running"]:
+    # Main Game Loop
+    while gameParams["game_running"]: #While the game is running...
 
-        # listen for quit event (clicking the red X button) and quit the program when clicked
-        for event in pygame.event.get():
-           if event.type == pygame.QUIT:
-            pygame.quit()
-            sys.exit()
+        
+        for event in pygame.event.get():#...listen for event
+           if event.type == pygame.QUIT:#...If the user closes the window...
+            pygame.quit()               #...quit the game...
+            sys.exit()                  #...and exit the program
 
         # reinitialize all game parameter variables when user wants to start a new game
         if gameParams["restart_game"]:

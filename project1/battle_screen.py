@@ -85,40 +85,37 @@ class BattleScreen:
 
     def handle_attack(self, event, playerGridParams, opponentGridParams):
         player = playerGridParams["player"]
-        if self.special_enabled and not player.special_used: # for when special shot is to be used
-            return self.handle_special(event, playerGridParams, opponentGridParams)
+        if self.special_enabled and not player.special_used:                            #If special is selected and not used yet this game...
+            return self.handle_special(event, playerGridParams, opponentGridParams)     #...shoot a special attack
 
-        #Extract grid parameters
-        #player = gridParams["player"] #Get player from the grid parameters
-        #opponent = self.gameParams["player2"] if player.player_id == 1 else self.gameParams["player1"] #Get opponent from the game parameters
-        else:
+        else:                                                                           #Otherwise continue with the regular attack...                                          
             opponent = opponentGridParams["player"] #Get player from the grid parameters
 
-            if event.type == pygame.MOUSEBUTTONDOWN: # when mouse is clicked
-                x, y = (event.pos[0] - opponentGridParams["grid_x"]) // opponentGridParams["cell_size"], (event.pos[1] - opponentGridParams["grid_y"]) // opponentGridParams["cell_size"]
-                if 0 <= x < 10 and 0 <= y < 10: # ensure cells are in range
-                    if opponent.hits[y][x] is None:
-                        ship = self.get_ship(opponent, x, y) # retrieve ship that is hit
-                        if ship:
-                            opponent.hits[y][x] = 'H'  # Mark as hit
-                            if self.check_ship_sunk(opponent, ship): # check if all coords of ship are hit
-                                opponent.sunk_ships.append(ship['coords'])
-                                return "Sink!" # return that ship is sunk
-                            else:
-                                return "Hit!" # return that ship is hit
-                        else:
-                            opponent.hits[y][x] = 'M'  # Mark as miss
-                            return "Miss!"
-                    else:
-                        return "Already Attacked!" # display as already attacked
-            return None
+            if event.type == pygame.MOUSEBUTTONDOWN:                                                                                                                                        # When mouse is clicked...
+                x, y = (event.pos[0] - opponentGridParams["grid_x"]) // opponentGridParams["cell_size"], (event.pos[1] - opponentGridParams["grid_y"]) // opponentGridParams["cell_size"]   # ...get the x and y coordinates of the cell clicked...
+                if 0 <= x < 10 and 0 <= y < 10:                                                                                                                                             # ...Ensure click is in the grid...
+                    if opponent.hits[y][x] is None:                                                                                                                                         # ...Ensure cell has not been attacked...                               
+                        ship = self.get_ship(opponent, x, y)                                                                                                                                    # ...Check if there is a ship at the coordinates...             
+                        if ship:                                                                                                                                                                    # ...If there is a ship...                                         
+                            opponent.hits[y][x] = 'H'                                                                                                                                               # ...Mark as hit
+                            if self.check_ship_sunk(opponent, ship):                                                                                                                                    # If entire ship is hit...
+                                opponent.sunk_ships.append(ship['coords'])                                                                                                                              # ...mark ship as sunk...                                     
+                                return "Sink!"                                                                                                                                                          # ...return that ship is sunk
+                            else:                                                                                                                                                                       # Otherwise...
+                                return "Hit!"                                                                                                                                                           # ...return that ship is hit
+                        else:                                                                                                                                                                       # If there is no ship...                                           
+                            opponent.hits[y][x] = 'M'                                                                                                                                               # Mark as miss
+                            return "Miss!"                                                                                                                                                          # Return that it is a miss      
+                    else:                                                                                                                                                                   # If cell has already been attacked...                     
+                        return "Already Attacked!"                                                                                                                                          # ...display as already attacked
+            return None                                                                                                                                                                 # Return nothing if no attack is made (Player clicked outside the grid)
 
     def get_ship(self, opponent, x, y):
         """Find the ship at the given coordinates."""
-        for ship in opponent.ships:
-            if (y, x) in ship['coords']: # loop through all ships of opponent and see if one is in the coords targetted
-                return ship
-        return None
+        for ship in opponent.ships:         # Loop through all ships of opponent...
+            if (y, x) in ship['coords']:    # ...if the coordinates are in the ship's coordinates...
+                return ship                 # ...return the ship...
+        return None                         # ...otherwise, return None if no ship is found
 
     def check_ship_sunk(self, player, ship): 
         """Check if all coordinates of a ship have been hit."""
@@ -214,16 +211,16 @@ class BattleScreen:
                 special_button = Button(self.colors, self.gameParams, special_buttonParams) # button created
                 special_button.draw() # draw button
 
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    pygame.quit() # exit program
-                    sys.exit()
+            for event in pygame.event.get():    # listen for events...
+                if event.type == pygame.QUIT:   # ...if the user closes the window...
+                    pygame.quit()               # ...exit program...
+                    sys.exit()                  # ...and quit
 
 
-                if not attack_made:
-                    shot_result = self.handle_attack(event, playerGridParams, opponentGridParams)
-                    if shot_result:
-                        attack_made = True # attack has been made so change state of attack made
+                if not attack_made:                                                                 # if attack has not been made...
+                    shot_result = self.handle_attack(event, playerGridParams, opponentGridParams)   # ...handle the attack...
+                    if shot_result:                                                                 # ...if the attack is made...                        
+                        attack_made = True                                                          # ...Set attack made to True...
 
             pygame.display.flip()  # Update the display
 
