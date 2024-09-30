@@ -28,12 +28,11 @@ from battle_screen import BattleScreen
 from pass_screen import PassScreen
 from placement_screen import PlacementScreen
 from win_screen import WinScreen
-from ai import AI
 
 # Initialize Pygame and set up the display
 pygame.init()
 
-
+# dict to hold game parameters
 gameParams = {
     "winner" : None,
     "game_running": True,
@@ -41,11 +40,8 @@ gameParams = {
     "num_ships": 0,
     "player1" : Player(1),
     "player2" : Player(2),
-    #"player2": AI(2),
     "screen" : pygame.display.set_mode((1000, 750)), #1000x750 pixel window
     "font" : pygame.font.Font(None,36), #Default font for text
-    "ai_mode": None,
-    "special_enabled": False
 }
 
 # Define color constants for easy reference throughout the game
@@ -59,24 +55,21 @@ colorDict = {
     "GRID_BLUE" : (10, 150, 210),
 }
 
-#Initializing Player information
-
-# Lists to store sunk ships for each player
-
 def main():
     """
     Main game loop that controls the flow of the game.
     """
-    clock = pygame.time.Clock()
 
+    # loop that executes while game is running
     while gameParams["game_running"]:
 
+        # listen for quit event (clicking the red X button) and quit the program when clicked
         for event in pygame.event.get():
            if event.type == pygame.QUIT:
-            gameParams["game_running"] = False
             pygame.quit()
             sys.exit()
 
+        # reinitialize all game parameter variables when user wants to start a new game
         if gameParams["restart_game"]:
             # Reset all game variables for a new game
             gameParams["num_ships"] = 0
@@ -98,30 +91,45 @@ def main():
         passScreen = PassScreen(colorDict, gameParams)
         battleScreen = BattleScreen(colorDict, gameParams)
         winScreen = WinScreen(colorDict, gameParams)
+        
+        # display the player 1's placement screen
+        placementScreen.display(gameParams["player1"])
+        #If player2 is a user, show their placement screen
+        if not gameParams["player2"].isAI: placementScreen.display(gameParams["player2"])
+        else: gameParams["player2"].place_AI_ships(gameParams["num_ships"])
 
-        placementScreen.display(gameParams["player1"]) #Show player1's placement screen
-        if not gameParams["player2"].isAI: placementScreen.display(gameParams["player2"]) #If player2 is not AI, show their placement screen
-
-
-
-
+        # execute the following loop until there is a winner
         while gameParams["winner"] == None:
             # Player 1's turn
             battleScreen.display(gameParams["player1"])
+            # if there is a winner, break out of the loop
             if gameParams["winner"]:
                 break
-            passScreen.display(gameParams["player2"])
 
-            # Player 2's turn
-            battleScreen.display(gameParams["player2"])
-            if gameParams["winner"]:
-                break
-            passScreen.display(gameParams["player1"])
+            # if player 2 is an AI, have the AI fire and return a winner (if there is one)
+            if gameParams["player2"].isAI:
+                winner = gameParams["player2"].fire(gameParams["player1"])
+                if winner: gameParams["winner"] = winner
+
+            # if player 2 is user, pass the screen to player 2, then display their board
+            else:
+                passScreen.display(gameParams["player2"])
+
+                # Player 2's turn
+                battleScreen.display(gameParams["player2"])
+                # if there is a winner, break out of the loop
+                if gameParams["winner"]:
+                    break
+
+                # otherwise pass the screen back to player 1
+                passScreen.display(gameParams["player1"])
+
 
         # Display winner and handle game end or restart
         while gameParams["restart_game"] == False:
             winScreen.display(gameParams["winner"])
-
+        
+        # if game is not runninng, break out of the loop (which exits the program)
         if not gameParams["game_running"]:
             break
 
