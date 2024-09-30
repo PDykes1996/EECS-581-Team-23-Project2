@@ -74,6 +74,7 @@ class StartScreen:
         self.play_mode_selected = True # store the fact that the game mode has been selected
         self.ai_mode = True  # AI mode selected
         self.ship_selection_active = False  # prevent ship selection until difficulty is chosen
+        self.gameParams["player2"].isAI = True
 
     def display_ai_difficulty_selection(self):
         """
@@ -111,9 +112,6 @@ class StartScreen:
         self.difficulty_selected = True # imply that difficulty has been selected
         self.ship_selection_active = True # and signal that ship selection is ready
         self.gameParams["player2"].difficulty = difficulty
-        self.gameParams["player2"].isAI = True
-        self.gameParams["player2"].isAI = True
-        self.gameParams["player2"].gameParams = self.gameParams
 
     """
     def set_difficulty(self, difficulty):

@@ -4,20 +4,7 @@ import pygame
 import sys
 
 class BattleScreen:
-    
-    #global finished, player1_sunk_ships, player2_sunk_ships, player1_hits, player2_hits
-
-    
-    # Determine which player's sunk ships to update
-    #player_sunk_ships = player1_sunk_ships if player == 1 else player2_sunk_ships
-    #opponent_sunk_ships = player2_sunk_ships if player == 1 else player1_sunk_ships
-    #opponent_hits = player2_hits if player == 1 else player1_hits
-    
-    def __init__(self, colors, gameParams):
-        self.gameParams = gameParams
-        self.colors = colors
-        self.special_enabled = False
-        """
+    """
         Display the battle screen where players make attacks.
 
         Args:
@@ -28,8 +15,13 @@ class BattleScreen:
 
         Returns:
         int: 0 if no winner, or the winning player number
-        """
+    """
     
+    def __init__(self, colors, gameParams):
+        self.gameParams = gameParams
+        self.colors = colors
+        self.special_enabled = False
+
     def draw_grid(self, gridParams, opponent=False):
         # Extract game parameters
         screen = self.gameParams["screen"]
@@ -67,12 +59,13 @@ class BattleScreen:
                     pygame.draw.line(screen, self.colors["RED"], (cell_x + 25, cell_y + 5), (cell_x + 5, cell_y + 25), 2)
 
     def handle_special(self, event, playerGridParams, opponentGridParams):
+        player = playerGridParams["player"]
         opponent = opponentGridParams["player"] #Get player from the grid parameters
         ret = None
         if event.type == pygame.MOUSEBUTTONDOWN:
             x, y = (event.pos[0] - opponentGridParams["grid_x"]) // opponentGridParams["cell_size"], (event.pos[1] - opponentGridParams["grid_y"]) // opponentGridParams["cell_size"]
             if 0 < x < 9 and 0 < y < 9:
-                playerGridParams["special_used"] = True
+                player.special_used = True
                 for i in range(y-1, y+2):
                     for j in range(x-1, x+2):
                         ship = self.get_ship(opponent, j, i)
@@ -91,7 +84,8 @@ class BattleScreen:
             return ret
 
     def handle_attack(self, event, playerGridParams, opponentGridParams):
-        if self.special_enabled:
+        player = playerGridParams["player"]
+        if self.special_enabled and not player.special_used:
             return self.handle_special(event, playerGridParams, opponentGridParams)
 
         #Extract grid parameters
@@ -206,7 +200,7 @@ class BattleScreen:
             finish_turn_button = Button(self.colors, self.gameParams, finish_turn_buttonParams, enabled = attack_made )
             finish_turn_button.draw()
 
-            if playerGridParams["special_used"] == False:
+            if player.special_used == False:
                 # special button
                 special_buttonParams = {
                     "x": 600,
