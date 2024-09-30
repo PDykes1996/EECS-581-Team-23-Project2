@@ -1,6 +1,8 @@
 """"
 script.py
 
+Project 1
+
 Description:
 This program implements a two-player Battleship game using Pygame. Players can place ships on a grid and take turns attacking each other's ships.
 
@@ -18,6 +20,31 @@ Other sources:
 
 Authors: Ethan Dirkes, Chase Entwistle, Christopher Gronewold, Tommy Lam, Zonaid Prithu
 Creation date: 9/6/2024
+
+
+Project 2
+
+Description:
+This program implements a one or two-player Battleship game using Pygame. 
+Players can place ships on a grid and take turns attacking each other's ships.
+Option to play against AI with three levels of difficulty
+
+Inputs:
+- Mouse clicks for ship placement and attacks
+- Keyboard input for rotating ships during placement
+- Difficulty Level
+- Number of ships
+- PvP or PvAI
+
+Output:
+- Graphical display of the game board, ship placements, and attack results
+
+Other sources:
+- Chat GPT for how pygame displays and how to use lambda functions
+- Various Stack Overflow pages
+
+Authors: John Mosley, Paul Dykes, Willem Battey, Aryamann Zutshi, Spencer Addis
+Creation date: 9/26/2024
 """
 
 import pygame
