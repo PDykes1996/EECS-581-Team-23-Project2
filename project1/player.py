@@ -10,30 +10,30 @@ class Player:
         self.attack_grid = [[None for _ in range(10)] for _ in range(10)] #same thing as above line
         self.special_used = False #initializing to false, set to true once used, can't use again
         self.special_enabled = False #same thing
-        self.first_hit = None #
-        self.previous_hit = None
-        self.fire_before = True
-        self.horizontal = True
-        self.recent_hits = 0
+        self.first_hit = None #initialzing
+        self.previous_hit = None #initializing
+        self.fire_before = True ##initializing
+        self.horizontal = True #initializnig
+        self.recent_hits = 0 #initializing
 
-        if difficulty is None:
-            self.difficulty = None
-            self.isAI = False
+        if difficulty is None: #difficult only matters if player2 is set to AI
+            self.difficulty = None #need to pass None
+            self.isAI = False #set to false
         
         else:
-            self.difficulty = difficulty
-            self.isAI = True
+            self.difficulty = difficulty #'Easy', 'Medium', or 'Hard'
+            self.isAI = True #envoke ai mode
 
     def get_ship(self, opponent, x, y):
         """Find the ship at the given coordinates."""
-        for ship in opponent.ships:
-            if (y, x) in ship['coords']:
-                return ship
-        return None
+        for ship in opponent.ships: #just finding all the opponent ship, looping through
+            if (y, x) in ship['coords']: #returning dictionary as lists of tuples for points checked against ship's current coordinates
+                return ship #return
+        return None #no ship found at coordinate return None
     
     def check_ship_sunk(self, player, ship):
         """Check if all coordinates of a ship have been hit."""
-        return all(player.hits[y][x] == 'H' for y, x in ship['coords'])
+        return all(player.hits[y][x] == 'H' for y, x in ship['coords']) #loops through list of tuples, 
 
     def all_ships_sunk(self, player):
         """Check if all ships of a player have been sunk."""
