@@ -9,7 +9,7 @@ class Player:
         self.hits = [[None] * 10 for _ in range(10)] #list comprehension for creating ten element list all elements initialized to None
         self.attack_grid = [[None for _ in range(10)] for _ in range(10)] #same thing as above line
         self.special_used = False #initializing to false, set to true once used, can't use again
-        self.special_enabled = False #same thing
+        #self.special_enabled = False #same thing
         self.first_hit = None #
         self.previous_hit = None
         self.fire_before = True
@@ -46,15 +46,15 @@ class Player:
             if horizontal:
                 x = random.randint(0, 10 - length)
                 y = random.randint(0, 9)
+                print("horizontal ship:")
+                print({'coords': set((y, j) for j in range(x, x + length - 1)), 'size': length})
+                self.ships.append({'coords': set((y, j) for j in range(x, x + length - 1)), 'size': length})
             else:
                 x = random.randint(0, 9)
                 y = random.randint(0, 10 - length)
-
-            for i in range(length):
-                if horizontal:
-                    self.ships.append({'coords': set((i, y) for i in range(x, x + length - 1)), 'size': length})
-                else:
-                    self.ships.append({'coords': set((y, j) for j in range(y, y + length)), 'size': length})
+                print("vertical ship:")
+                print({'coords': set((i, x) for i in range(y, y + length)), 'size': length})
+                self.ships.append({'coords': set((i, x) for i in range(y, y + length)), 'size': length})
 
     def level_one(self, player):
         x = random.randint(0, 9)
