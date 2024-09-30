@@ -54,6 +54,13 @@ colorDict = {
     "RED" : (255, 0, 0),
     "GRID_BLUE" : (10, 150, 210),
 }
+#Initialize other screens with new game parameters
+startScreen = StartScreen(gameParams, colorDict)
+placementScreen = PlacementScreen(colorDict, gameParams)
+passScreen = PassScreen(colorDict, gameParams)
+battleScreen = BattleScreen(colorDict, gameParams)
+winScreen = WinScreen(colorDict, gameParams)
+
 
 def main():
     """
@@ -72,25 +79,22 @@ def main():
         # reinitialize all game parameter variables when user wants to start a new game
         if gameParams["restart_game"]:
             # Reset all game variables for a new game
+            gameParams["winner"] = None
             gameParams["num_ships"] = 0
-            gameParams["player1"].ships = None
-            gameParams["player2"].ships = None
+            gameParams["player1"].ships = []  # Reset to an empty list, not None
+            gameParams["player2"].ships = []  # Same for player2
             gameParams["player1"].sunk_ships = []
             gameParams["player2"].sunk_ships = []
-            gameParams["player1"].hits = None
-            gameParams["player2"].hits = None
+            gameParams["player1"].hits = [[None for _ in range(10)] for _ in range(10)]  # Reset the hits grid
+            gameParams["player2"].hits = [[None for _ in range(10)] for _ in range(10)]  # Same for player2
             gameParams["restart_game"] = False
             continue
         
         # Start screen to select number of ships
-        startScreen = StartScreen(gameParams, colorDict)
+
         startScreen.display()
 
-        #Initialize other screens with new game parameters
-        placementScreen = PlacementScreen(colorDict, gameParams)
-        passScreen = PassScreen(colorDict, gameParams)
-        battleScreen = BattleScreen(colorDict, gameParams)
-        winScreen = WinScreen(colorDict, gameParams)
+
         
         # display the player 1's placement screen
         placementScreen.display(gameParams["player1"])
@@ -126,7 +130,7 @@ def main():
 
 
         # Display winner and handle game end or restart
-        while gameParams["restart_game"] == False:
+        while gameParams["restart_game"] == False and gameParams["game_running"]:
             winScreen.display(gameParams["winner"])
         
         # if game is not runninng, break out of the loop (which exits the program)
