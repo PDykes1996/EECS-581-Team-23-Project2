@@ -3,15 +3,14 @@ import random
 
 class Player:
     def __init__(self, player_id, difficulty=None):
-        self.player_id = player_id
-        self.ships = []
-        self.sunk_ships = []
-        self.hits = [[None] * 10 for _ in range(10)]
-        self.attack_grid = [[None for _ in range(10)] for _ in range(10)]
-        self.special_used = False
-        self.special_enabled = False
-
-        self.first_hit = None
+        self.player_id = player_id #player id
+        self.ships = [] #list of ships
+        self.sunk_ships = [] #sunk ships list
+        self.hits = [[None] * 10 for _ in range(10)] #list comprehension for creating ten element list all elements initialized to None
+        self.attack_grid = [[None for _ in range(10)] for _ in range(10)] #same thing as above line
+        self.special_used = False #initializing to false, set to true once used, can't use again
+        self.special_enabled = False #same thing
+        self.first_hit = None #
         self.previous_hit = None
         self.fire_before = True
         self.horizontal = True
