@@ -9,7 +9,7 @@ class Player:
         self.hits = [[None] * 10 for _ in range(10)] #list comprehension for creating ten element list all elements initialized to None
         self.attack_grid = [[None for _ in range(10)] for _ in range(10)] #same thing as above line
         self.special_used = False #initializing to false, set to true once used, can't use again
-        self.special_enabled = False #same thing
+        #self.special_enabled = False #same thing
         self.first_hit = None #initialzing
         self.previous_hit = None #initializing
         self.fire_before = True ##initializing
